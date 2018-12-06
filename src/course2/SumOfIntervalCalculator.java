@@ -4,7 +4,7 @@ package course2;
  * HOMEWORK 1:
  * Write a program that will sum up all numbers from 0 up to a target number.
  * For example, for an input number 5, result should be 15 (0+1+2+3+4+5)
- * NOTE: All numbers will be integers.
+ * NOTE: All numbers will be positive integers.
  */
 
 
@@ -20,7 +20,7 @@ public class SumOfIntervalCalculator
     }
 
 
-    private static int computeSumOfIntegerInterval(int startLimit, int endLimit )
+    public static int computeSumOfIntegerInterval(int startLimit, int endLimit )
     {
         int result = 0;
 
