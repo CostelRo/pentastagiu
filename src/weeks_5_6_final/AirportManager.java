@@ -20,10 +20,15 @@ public class AirportManager
 
     // constructors
 
-    private AirportManager( Airport localAirport, LocalDateTime currentDateTime )
+    private AirportManager( Airport localAirport,
+                            LocalDateTime currentDateTime,
+                            FlightValidator flightValidator,
+                            PassengerValidator passengerValidator )
     {
-        this.flightsManager         = FlightsManager.getSingleton( localAirport, currentDateTime );
-        this.passengersManager      = PassengersManager.getSingleton();
+        this.flightsManager         = FlightsManager.getSingleton( localAirport,
+                                                                   currentDateTime,
+                                                                   flightValidator );
+        this.passengersManager      = PassengersManager.getSingleton( passengerValidator );
         this.localAirport           = localAirport;
         this.currentDateTime        = currentDateTime;
         this.destinationAirports    = new HashSet<>();
@@ -32,12 +37,16 @@ public class AirportManager
 
     /**
      * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
-     * After the creation of the singleton instance, any attempts to call this method with another Airport instance
-     * or another date & time will be ignored and the existing singleton instance will be returned unchanged.
+     * After the creation of the singleton instance, any attempts to call this method with other parameters
+     * will be ignored and the existing singleton instance will be returned unchanged.
      * @param localAirport the Airport instance representing the airport administered by this instance of this class
      * @param currentDateTime the LocalDateTime used as current by the entire app.
+     * @return the singleton instance of this class
      */
-    public static AirportManager getSingleton( Airport localAirport, LocalDateTime currentDateTime )
+    public static AirportManager getSingleton( Airport localAirport,
+                                               LocalDateTime currentDateTime,
+                                               FlightValidator flightValidator,
+                                               PassengerValidator passengerValidator )
     {
         if( AirportManager.singleton == null
                 && localAirport != null
@@ -47,7 +56,10 @@ public class AirportManager
             {
                 if( AirportManager.singleton == null )
                 {
-                    AirportManager.singleton = new AirportManager( localAirport, currentDateTime );
+                    AirportManager.singleton = new AirportManager( localAirport,
+                                                                   currentDateTime,
+                                                                   flightValidator,
+                                                                   passengerValidator );
                 }
             }
         }

@@ -24,9 +24,11 @@ public class FlightsManager
 
     // constructors
 
-    private FlightsManager( Airport localAirport, LocalDateTime currentDateTime )
+    private FlightsManager( Airport localAirport,
+                            LocalDateTime currentDateTime,
+                            FlightValidator flightValidator )
     {
-        this.flightValidator = FlightValidator.getSingleton();
+        this.flightValidator = flightValidator;
         this.localAirport    = localAirport;
         this.currentDateTime = currentDateTime;
         this.flightsByName   = new HashMap<>();
@@ -34,7 +36,18 @@ public class FlightsManager
     }
 
 
-    public static FlightsManager getSingleton( Airport localAirport, LocalDateTime currentDateTime )
+    /**
+     * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
+     * After the creation of the singleton instance, any attempts to call this method with other parameters
+     * will be ignored and the existing singleton instance will be returned unchanged.
+     * @param localAirport the Airport instance representing the airport administered by this instance of this class
+     * @param currentDateTime the LocalDateTime used as current by the entire app.
+     * @param flightValidator the objects used for validations of the flights
+     * @return the singleton instance of this class
+     */
+    public static FlightsManager getSingleton( Airport localAirport,
+                                               LocalDateTime currentDateTime,
+                                               FlightValidator flightValidator )
     {
         if( FlightsManager.singleton == null
                 && localAirport != null
@@ -44,7 +57,7 @@ public class FlightsManager
             {
                 if( FlightsManager.singleton == null )
                 {
-                    FlightsManager.singleton = new FlightsManager( localAirport, currentDateTime );
+                    FlightsManager.singleton = new FlightsManager( localAirport, currentDateTime, flightValidator );
                 }
             }
         }
@@ -53,6 +66,11 @@ public class FlightsManager
     }
 
 
+    /**
+     *
+     * This method simply returns the currently defined instance of this class.
+     * @return the already created singleton instance of this class, or null
+     */
     public static FlightsManager getSingleton()
     {
         return FlightsManager.singleton;

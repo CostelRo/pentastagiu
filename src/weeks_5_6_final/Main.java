@@ -16,12 +16,17 @@ public class Main
     public static void main( String[] args )
     {
         // prepare objects for testing
-        Airport localAirport = new Airport( "IAS", "Iasi", "Romania");
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        AirportManager airportManager = Main.startAirportManager( localAirport, currentDateTime );
+        Airport             localAirport         = new Airport( "IAS", "Iasi", "Romania");
+        LocalDateTime       currentDateTime      = LocalDateTime.now();
+        FlightValidator     flightValidator      = FlightValidator.getSingleton();
+        PassengerValidator  passengerValidator   = PassengerValidator.getSingleton();
+        AirportManager      airportManager       = Main.startAirportManager( localAirport,
+                                                                             currentDateTime,
+                                                                             flightValidator,
+                                                                             passengerValidator );
 
-        FlightsManager flightsManager = FlightsManager.getSingleton();
-        PassengersManager passengersManager = PassengersManager.getSingleton();
+        FlightsManager    flightsManager    = FlightsManager.getSingleton();
+        PassengersManager passengersManager = PassengersManager.getSingleton( passengerValidator );
 
 
         // create & add the known airports
@@ -258,9 +263,15 @@ public class Main
     }
 
 
-    private static AirportManager startAirportManager( Airport localAirport, LocalDateTime currentDateTime )
+    private static AirportManager startAirportManager( Airport localAirport,
+                                                       LocalDateTime currentDateTime,
+                                                       FlightValidator flightValidator,
+                                                       PassengerValidator passengerValidator )
     {
-        return AirportManager.getSingleton( localAirport, currentDateTime );
+        return AirportManager.getSingleton( localAirport,
+                                            currentDateTime,
+                                            flightValidator,
+                                            passengerValidator );
     }
 
 
