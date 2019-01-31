@@ -57,7 +57,7 @@ public class FlightValidator
     {
         return (airportCode != null)
                 && AirportManager.getSingleton().getDestinationAirports().stream()
-                                                                         .anyMatch( airport -> airport.getCode()
+                                                                         .anyMatch( airport -> airport.getAirportCode()
                                                                                                .equals( airportCode ) );
     }
 

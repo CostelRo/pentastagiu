@@ -19,30 +19,25 @@ public class Main
     public static void main( String[] args )
     {
         // prepare objects for testing
-        Airport             localAirport         = new Airport( "IAS", "Iasi", "Romania");
-        LocalDateTime       currentDateTime      = LocalDateTime.now();
 
         ApplicationContext context = new ClassPathXmlApplicationContext( "airport-application-context.xml" );
 
-        FlightValidator     flightValidator      = FlightValidator.getSingleton();
-        PassengerValidator  passengerValidator   = PassengerValidator.getSingleton();
-        AirportManager      airportManager       = Main.startAirportManager( localAirport,
-                                                                             currentDateTime,
-                                                                             flightValidator,
-                                                                             passengerValidator );
-
+        Airport             localAirport         = new Airport( "IAS",
+                                                                "Iasi",
+                                                                "Romania");
+        AirportManager      airportManager       = Main.startAirportManager( localAirport );
         FlightsManager    flightsManager    = FlightsManager.getSingleton();
-        PassengersManager passengersManager = PassengersManager.getSingleton( passengerValidator );
+        PassengersManager passengersManager = PassengersManager.getSingleton();
 
 
         // create & add the known airports
         System.out.println( "~~~ 1 ~~~" );
         Set<Airport> knownAirports = new HashSet<>( Arrays.asList(
-                                                        new Airport( "OTP", "Bucharest", "Romania"),
-                                                        new Airport( "ORY", "Paris", "France"),
-                                                        new Airport( "NCE", "Nice", "France"),
-                                                        new Airport( "TXL", "Berlin", "Germany"),
-                                                        new Airport( "HAM", "Hamburg", "Germany") ) );
+                                        new Airport( "OTP", "Bucharest", "Romania"),
+                                        new Airport( "ORY", "Paris", "France"),
+                                        new Airport( "NCE", "Nice", "France"),
+                                        new Airport( "TXL", "Berlin", "Germany"),
+                                        new Airport( "HAM", "Hamburg", "Germany") ) );
 
         knownAirports.forEach( airportManager::addNewAirport );
 
@@ -269,15 +264,9 @@ public class Main
     }
 
 
-    private static AirportManager startAirportManager( Airport localAirport,
-                                                       LocalDateTime currentDateTime,
-                                                       FlightValidator flightValidator,
-                                                       PassengerValidator passengerValidator )
+    private static AirportManager startAirportManager( Airport localAirport )
     {
-        return AirportManager.getSingleton( localAirport,
-                                            currentDateTime,
-                                            flightValidator,
-                                            passengerValidator );
+        return AirportManager.getSingleton( localAirport );
     }
 
 

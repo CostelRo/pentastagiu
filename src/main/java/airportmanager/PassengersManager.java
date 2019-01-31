@@ -27,9 +27,9 @@ public class PassengersManager
 
     //constructors
     @Autowired
-    private PassengersManager( PassengerValidator passengerValidator )
+    private PassengersManager()
     {
-        this.passengerValidator         = passengerValidator;
+        this.passengerValidator         = PassengerValidator.getSingleton();
         this.passengersByID             = new HashMap<>();
         this.flightsNamesByPassengerID  = new HashMap<>();
         this.deletedPassengers          = new HashSet<>();
@@ -40,10 +40,10 @@ public class PassengersManager
      * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
      * After the creation of the singleton instance, any attempts to call this method with other parameters
      * will be ignored and the existing singleton instance will be returned unchanged.
-     * @param passengerValidator the objects used for validations of the passengers
+//     * @param passengerValidator the objects used for validations of the passengers
      * @return the singleton instance of this class
      */
-    public static PassengersManager getSingleton( PassengerValidator passengerValidator )
+    public static PassengersManager getSingleton()
     {
         if( PassengersManager.singleton == null )
         {
@@ -51,23 +51,12 @@ public class PassengersManager
             {
                 if( PassengersManager.singleton == null )
                 {
-                    PassengersManager.singleton = new PassengersManager( passengerValidator );
+                    PassengersManager.singleton = new PassengersManager();
                 }
             }
         }
 
         return PassengersManager.singleton;
-    }
-
-
-    /**
-     *
-     * This method simply returns the currently defined instance of this class.
-     * @return the already created singleton instance of this class, or null
-     */
-    public static PassengersManager getSingleton()
-    {
-        return singleton;
     }
 
 

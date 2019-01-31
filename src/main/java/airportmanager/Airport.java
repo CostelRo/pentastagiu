@@ -7,42 +7,47 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@Qualifier( "localAirport" )
+//@Qualifier( "localAirport" )
 public class Airport implements Comparable<Airport>
 {
     // state
 
-    private String code;
-    private String city;
-    private String country;
+    @Qualifier( "airportCode" )
+    private String airportCode;
+
+    @Qualifier( "airportCity" )
+    private String airportCity;
+
+    @Qualifier( "airportCountry" )
+    private String airportCountry;
 
 
     // constructors
 
     @Autowired
-    public Airport( String code, String city, String country )
+    public Airport( String airportCode, String airportCity, String airportCountry )
     {
-        this.code    = code.toUpperCase();
-        this.city    = city;
-        this.country = country;
+        this.airportCode    = airportCode.toUpperCase();
+        this.airportCity    = airportCity;
+        this.airportCountry = airportCountry;
     }
 
 
     // getters & setters
 
-    public String getCode()
+    public String getAirportCode()
     {
-        return code;
+        return airportCode;
     }
 
-    public String getCity()
+    public String getAirportCity()
     {
-        return city;
+        return airportCity;
     }
 
-    public String getCountry()
+    public String getAirportCountry()
     {
-        return country;
+        return airportCountry;
     }
 
 
@@ -54,9 +59,9 @@ public class Airport implements Comparable<Airport>
         if( other == null ) { return 1; }
         if( other == this ) { return 0; }
 
-        return (this.city.compareTo( other.city ) != 0)
-               ? this.city.compareTo( other.city )
-               : this.code.compareTo( other.code );
+        return (this.airportCity.compareTo( other.airportCity) != 0)
+               ? this.airportCity.compareTo( other.airportCity)
+               : this.airportCode.compareTo( other.airportCode);
     }
 
 
@@ -70,20 +75,20 @@ public class Airport implements Comparable<Airport>
 
         Airport other = (Airport) obj;
 
-        return this.code.equals( other.code );
+        return this.airportCode.equals( other.airportCode );
     }
 
 
     @Override
     public int hashCode()
     {
-        return this.code.hashCode();
+        return this.airportCode.hashCode();
     }
 
 
     @Override
     public String toString()
     {
-        return this.city + " " + this.code + " (" + this.country + ")";
+        return this.airportCity + " " + this.airportCode + " (" + this.airportCountry + ")";
     }
 }

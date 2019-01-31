@@ -198,7 +198,7 @@ public class Flight implements Comparable<Flight>
         Optional<Airport> destination = AirportManager.getSingleton()
                                              .getDestinationAirports()
                                              .stream()
-                                             .filter( airport -> airport.getCode().equals(this.destinationAirportCode) )
+                                             .filter( airport -> airport.getAirportCode().equals(this.destinationAirportCode) )
                                              .findFirst();
 
         return this.flightNumber

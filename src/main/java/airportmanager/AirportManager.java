@@ -14,28 +14,23 @@ public class AirportManager
 {
     // state
 
-    private static volatile       AirportManager    singleton            = null;
+    private static volatile       AirportManager    singleton               = null;
+    private static                LocalDateTime     currentDateTime         = LocalDateTime.now();
+    private                 final Airport           localAirport;
     private                       FlightsManager    flightsManager;
     private                       PassengersManager passengersManager;
-    private                 final Airport           localAirport;
-    private                       LocalDateTime     currentDateTime;
     private                       Set<Airport>      destinationAirports;
 
 
     // constructors
 
     @Autowired
-    private AirportManager( Airport localAirport,
-                            LocalDateTime currentDateTime,
-                            FlightValidator flightValidator,
-                            PassengerValidator passengerValidator )
+    private AirportManager( Airport localAirport )
     {
-        this.flightsManager         = FlightsManager.getSingleton( localAirport,
-                                                                   currentDateTime,
-                                                                   flightValidator );
-        this.passengersManager      = PassengersManager.getSingleton( passengerValidator );
         this.localAirport           = localAirport;
-        this.currentDateTime        = currentDateTime;
+        this.flightsManager         = FlightsManager.getSingleton( localAirport,
+                                                                   AirportManager.currentDateTime.toString() );
+        this.passengersManager      = PassengersManager.getSingleton();
         this.destinationAirports    = new HashSet<>();
     }
 
@@ -45,26 +40,18 @@ public class AirportManager
      * After the creation of the singleton instance, any attempts to call this method with other parameters
      * will be ignored and the existing singleton instance will be returned unchanged.
      * @param localAirport the Airport instance representing the airport administered by this instance of this class
-     * @param currentDateTime the LocalDateTime used as current by the entire app.
      * @return the singleton instance of this class
      */
-    public static AirportManager getSingleton( Airport localAirport,
-                                               LocalDateTime currentDateTime,
-                                               FlightValidator flightValidator,
-                                               PassengerValidator passengerValidator )
+    public static AirportManager getSingleton( Airport localAirport )
     {
         if( AirportManager.singleton == null
-                && localAirport != null
-                && currentDateTime != null )
+            && localAirport != null )
         {
             synchronized( AirportManager.class )
             {
                 if( AirportManager.singleton == null )
                 {
-                    AirportManager.singleton = new AirportManager( localAirport,
-                                                                   currentDateTime,
-                                                                   flightValidator,
-                                                                   passengerValidator );
+                    AirportManager.singleton = new AirportManager( localAirport );
                 }
             }
         }
@@ -79,7 +66,7 @@ public class AirportManager
      */
     public static AirportManager getSingleton()
     {
-        return singleton;
+        return AirportManager.getSingleton( null );
     }
 
 
@@ -137,7 +124,7 @@ public class AirportManager
         {
             for( Airport a : this.destinationAirports )
             {
-                if( a.getCode().equals( airportCode )  )
+                if( a.getAirportCode().equals( airportCode )  )
                 {
                     result = a;
                 }
@@ -159,7 +146,7 @@ public class AirportManager
     {
         return airportCode != null
                && this.destinationAirports.stream()
-                                          .anyMatch( airport -> airport.getCode().equals( airportCode ) );
+                                          .anyMatch( airport -> airport.getAirportCode().equals( airportCode ) );
     }
 
 
@@ -173,7 +160,7 @@ public class AirportManager
     {
         if( seconds > 0 )
         {
-            this.currentDateTime = this.currentDateTime.plusSeconds( seconds );
+            AirportManager.currentDateTime = AirportManager.currentDateTime.plusSeconds( seconds );
 
             this.updateAllFlightsStatusByTime();
         }

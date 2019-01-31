@@ -19,7 +19,6 @@ public class FlightsManager
     // state
 
     private static volatile  FlightsManager       singleton           = null;
-    @Autowired
     private                  FlightValidator      flightValidator;
     private                  Airport              localAirport;
     private                  LocalDateTime        currentDateTime;
@@ -30,13 +29,12 @@ public class FlightsManager
     // constructors
 
     @Autowired
-    private FlightsManager( Airport localAirport,
-                            LocalDateTime currentDateTime,
-                            FlightValidator flightValidator )
+    private FlightsManager( Airport         localAirport,
+                            String          currentDateTimeAsString )
     {
-        this.flightValidator = flightValidator;
+        this.flightValidator = FlightValidator.getSingleton();
         this.localAirport    = localAirport;
-        this.currentDateTime = currentDateTime;
+        this.currentDateTime = LocalDateTime.parse( currentDateTimeAsString );
         this.flightsByName   = new HashMap<>();
         this.deletedFlights  = new HashSet<>();
     }
@@ -47,23 +45,22 @@ public class FlightsManager
      * After the creation of the singleton instance, any attempts to call this method with other parameters
      * will be ignored and the existing singleton instance will be returned unchanged.
      * @param localAirport the Airport instance representing the airport administered by this instance of this class
-     * @param currentDateTime the LocalDateTime used as current by the entire app.
-     * @param flightValidator the objects used for validations of the flights
+     * @param currentDateTimeAsString the LocalDateTime used as current by the entire app. in String format
      * @return the singleton instance of this class
      */
     public static FlightsManager getSingleton( Airport localAirport,
-                                               LocalDateTime currentDateTime,
-                                               FlightValidator flightValidator )
+                                               String currentDateTimeAsString )
     {
         if( FlightsManager.singleton == null
                 && localAirport != null
-                && currentDateTime != null )
+                && currentDateTimeAsString != null )
         {
             synchronized( FlightsManager.class )
             {
                 if( FlightsManager.singleton == null )
                 {
-                    FlightsManager.singleton = new FlightsManager( localAirport, currentDateTime, flightValidator );
+                    FlightsManager.singleton = new FlightsManager( localAirport,
+                                                                   currentDateTimeAsString );
                 }
             }
         }

@@ -18,7 +18,7 @@ public class AirportManagerConfig
 //        }
 //        else
 //        {
-//            return new Airport( );
+//            return new Airport( airportCode, city, country );
 //        }
 //    }
 }
