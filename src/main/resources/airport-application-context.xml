@@ -7,24 +7,6 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean name="localAirport" class="airportmanager.Airport">
-        <constructor-arg value="IAS" />
-        <constructor-arg value="Iasi" />
-        <constructor-arg value="Romania" />
-    </bean>
-
-
-    <bean name="airportcode"    class="java.lang.String" />
-    <bean name="airportcity"    class="java.lang.String" />
-    <bean name="airportcountry" class="java.lang.String" />
-
-    <bean name="airport" class="airportmanager.Airport">
-        <constructor-arg ref="airportcode" />
-        <constructor-arg ref="airportcity" />
-        <constructor-arg ref="airportcountry" />
-    </bean>
-
-
     <context:annotation-config />
     <context:component-scan base-package="airportmanager" />
 

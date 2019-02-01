@@ -62,8 +62,11 @@ public class Flight implements Comparable<Flight>
 
     public void setDestinationAirportCode( String newDestinationAirportCode )
     {
+        FlightsManager flightsManager = FlightsManager.getSingleton( FlightValidator.getSingleton() );
+        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
+        AirportManager airportManager = AirportManager.getSingleton( flightsManager, passengersManager );
         if( newDestinationAirportCode != null
-            && AirportManager.getSingleton().isAirportRegistered( newDestinationAirportCode ) )
+            && airportManager.isAirportRegistered( newDestinationAirportCode ) )
         {
             this.destinationAirportCode = newDestinationAirportCode;
         }
@@ -151,8 +154,8 @@ public class Flight implements Comparable<Flight>
             this.passengers.remove(passengerID);
 
             // remove this flight from passenger's flight history
-            PassengersManager.getSingleton().getFlightsNamesByPassengerID().get( passengerID )
-                                                                           .remove( this.flightNumber );
+            PassengersManager.getSingleton( PassengerValidator.getSingleton() )
+                             .getFlightsNamesByPassengerID().get( passengerID ).remove( this.flightNumber );
         }
     }
 
@@ -195,10 +198,12 @@ public class Flight implements Comparable<Flight>
     @Override
     public String toString()
     {
-        Optional<Airport> destination = AirportManager.getSingleton()
-                                             .getDestinationAirports()
+        FlightsManager flightsManager       = FlightsManager.getSingleton( FlightValidator.getSingleton() );
+        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
+        Optional<Airport> destination = AirportManager.getSingleton( flightsManager, passengersManager )
+                                                      .getDestinationAirports()
                                              .stream()
-                                             .filter( airport -> airport.getAirportCode().equals(this.destinationAirportCode) )
+                                             .filter( airport -> airport.getCode().equals(this.destinationAirportCode) )
                                              .findFirst();
 
         return this.flightNumber

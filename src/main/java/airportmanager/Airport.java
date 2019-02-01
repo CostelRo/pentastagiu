@@ -1,53 +1,40 @@
 package airportmanager;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
-
-@Component
-//@Qualifier( "localAirport" )
 public class Airport implements Comparable<Airport>
 {
     // state
 
-    @Qualifier( "airportCode" )
-    private String airportCode;
-
-    @Qualifier( "airportCity" )
-    private String airportCity;
-
-    @Qualifier( "airportCountry" )
-    private String airportCountry;
+    private String code;
+    private String city;
+    private String country;
 
 
     // constructors
 
-    @Autowired
-    public Airport( String airportCode, String airportCity, String airportCountry )
+    public Airport( String code, String city, String country )
     {
-        this.airportCode    = airportCode.toUpperCase();
-        this.airportCity    = airportCity;
-        this.airportCountry = airportCountry;
+        this.code    = code.toUpperCase();
+        this.city    = city;
+        this.country = country;
     }
 
 
     // getters & setters
 
-    public String getAirportCode()
+    public String getCode()
     {
-        return airportCode;
+        return code;
     }
 
-    public String getAirportCity()
+    public String getCity()
     {
-        return airportCity;
+        return city;
     }
 
-    public String getAirportCountry()
+    public String getCountry()
     {
-        return airportCountry;
+        return country;
     }
 
 
@@ -59,9 +46,9 @@ public class Airport implements Comparable<Airport>
         if( other == null ) { return 1; }
         if( other == this ) { return 0; }
 
-        return (this.airportCity.compareTo( other.airportCity) != 0)
-               ? this.airportCity.compareTo( other.airportCity)
-               : this.airportCode.compareTo( other.airportCode);
+        return (this.city.compareTo( other.city) != 0)
+               ? this.city.compareTo( other.city)
+               : this.code.compareTo( other.code);
     }
 
 
@@ -75,20 +62,20 @@ public class Airport implements Comparable<Airport>
 
         Airport other = (Airport) obj;
 
-        return this.airportCode.equals( other.airportCode );
+        return this.code.equals( other.code);
     }
 
 
     @Override
     public int hashCode()
     {
-        return this.airportCode.hashCode();
+        return this.code.hashCode();
     }
 
 
     @Override
     public String toString()
     {
-        return this.airportCity + " " + this.airportCode + " (" + this.airportCountry + ")";
+        return this.city + " " + this.code + " (" + this.country + ")";
     }
 }

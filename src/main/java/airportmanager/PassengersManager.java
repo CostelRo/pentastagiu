@@ -27,9 +27,9 @@ public class PassengersManager
 
     //constructors
     @Autowired
-    private PassengersManager()
+    private PassengersManager( PassengerValidator passengerValidator )
     {
-        this.passengerValidator         = PassengerValidator.getSingleton();
+        this.passengerValidator         = passengerValidator;
         this.passengersByID             = new HashMap<>();
         this.flightsNamesByPassengerID  = new HashMap<>();
         this.deletedPassengers          = new HashSet<>();
@@ -43,7 +43,7 @@ public class PassengersManager
 //     * @param passengerValidator the objects used for validations of the passengers
      * @return the singleton instance of this class
      */
-    public static PassengersManager getSingleton()
+    public static PassengersManager getSingleton( PassengerValidator passengerValidator )
     {
         if( PassengersManager.singleton == null )
         {
@@ -51,13 +51,23 @@ public class PassengersManager
             {
                 if( PassengersManager.singleton == null )
                 {
-                    PassengersManager.singleton = new PassengersManager();
+                    PassengersManager.singleton = new PassengersManager( passengerValidator );
                 }
             }
         }
 
         return PassengersManager.singleton;
     }
+
+
+//    /**
+//     * This method returns the current singleton instance of this class, if it has already been defined.
+//     * @return the current singleton instance, if defined, or null
+//     */
+//    public static PassengersManager getSingleton()
+//    {
+//        return PassengersManager.singleton;
+//    }
 
 
     // getters & setters
@@ -96,7 +106,9 @@ public class PassengersManager
                                                     surname,
                                                     birthday );
 
-            FlightsManager.getSingleton().getFlightsByName().get( codeOfAvailableFlight ).addPassenger( newPassengerID );
+            FlightsManager.getSingleton( FlightValidator.getSingleton() ).getFlightsByName()
+                                                                         .get( codeOfAvailableFlight )
+                                                                         .addPassenger( newPassengerID );
 
             this.passengersByID.get( newPassengerID ).getFlightHistory().add( codeOfAvailableFlight );
 
@@ -110,10 +122,11 @@ public class PassengersManager
     {
         boolean result = false;
 
+        FlightsManager flightsManager = FlightsManager.getSingleton( FlightValidator.getSingleton() );
         if( flightNumber != null
-                && FlightsManager.getSingleton().getFlightsByName().containsKey( flightNumber ) )
+            && flightsManager.getFlightsByName().containsKey( flightNumber ) )
         {
-            Flight flight = FlightsManager.getSingleton().getFlightsByName().get( flightNumber );
+            Flight flight = flightsManager.getFlightsByName().get( flightNumber );
 
             result = ( (flight.getStatus() == FlightStatus.SCHEDULED)
                     && (flight.getAvailableSeats() > 0) );
@@ -196,15 +209,17 @@ public class PassengersManager
     {
         Set<Airport> result = new HashSet<>();
 
+        FlightsManager flightsManager       = FlightsManager.getSingleton( FlightValidator.getSingleton() );
+        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
         if( passengerID >= 0 )
         {
             Set<String> flightsOfPassenger = this.getFlightsNamesByPassengerID().get( passengerID );
 
             for( String flightName : flightsOfPassenger )
             {
-                Flight flight = FlightsManager.getSingleton().getFlightsByName().get( flightName );
-                Airport destination = AirportManager.getSingleton()
-                                                            .getAirportByCode( flight.getDestinationAirportCode() );
+                Flight flight = flightsManager.getFlightsByName().get( flightName );
+                Airport destination = AirportManager.getSingleton( flightsManager, passengersManager )
+                                                    .getAirportByCode( flight.getDestinationAirportCode() );
 
                 result.add( destination );
             }
@@ -220,11 +235,15 @@ public class PassengersManager
 
         if( flightName != null )
         {
-            Flight flight = FlightsManager.getSingleton().getFlightsByName().get( flightName );
+            Flight flight = FlightsManager.getSingleton( FlightValidator.getSingleton() )
+                                          .getFlightsByName().get( flightName.toUpperCase() );
 
-            for( int id : flight.getPassengers() )
+            if( flight != null )
             {
-                result.add( this.getPassengersByID().get( id ) );
+                for (int id : flight.getPassengers())
+                {
+                    result.add(this.getPassengersByID().get(id));
+                }
             }
         }
 
@@ -246,11 +265,12 @@ public class PassengersManager
 
     public List<Object> getPassengersForEachFlight()
     {
-        return FlightsManager.getSingleton().getFlightsByName().values().stream()
-                                                                        .map( flight -> flight.getFlightNumber()
-                                                                                            + " = "
-                                                                                            + flight.getPassengers() )
-                                                                        .collect( Collectors.toList() );
+        return FlightsManager.getSingleton( FlightValidator.getSingleton() )
+                             .getFlightsByName().values().stream()
+                                                         .map( flight -> flight.getFlightNumber()
+                                                                         + " = "
+                                                                         + flight.getPassengers() )
+                                                         .collect( Collectors.toList() );
     }
 
 
@@ -263,7 +283,7 @@ public class PassengersManager
             // remove passenger from each flight's passengers list
             for( String flightName : this.getFlightsNamesByPassengerID().get( passengerID ) )
             {
-                List<Flight> flightsAsList = new ArrayList<>( FlightsManager.getSingleton()
+                List<Flight> flightsAsList = new ArrayList<>( FlightsManager.getSingleton( FlightValidator.getSingleton() )
                                                                             .searchFlightsByPartialNumber(flightName) );
                 for( Flight f : flightsAsList )
                 {

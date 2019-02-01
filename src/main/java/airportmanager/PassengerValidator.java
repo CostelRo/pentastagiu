@@ -45,14 +45,14 @@ public class PassengerValidator
 
     public boolean isBirthdayValid( LocalDate birthday )
     {
-        return (birthday!= null) && birthday.isBefore( AirportManager.getSingleton().getCurrentDateTime()
-                                                                                    .toLocalDate() );
+        return (birthday!= null) && birthday.isBefore( LocalDate.now() );
     }
 
 
     public boolean isPassengerNew( Passenger passenger )
     {
         return passenger != null
-               && !PassengersManager.getSingleton().getPassengersByID().values().contains( passenger );
+               && !PassengersManager.getSingleton( PassengerValidator.singleton ).getPassengersByID()
+                                                                                 .values().contains( passenger );
     }
 }

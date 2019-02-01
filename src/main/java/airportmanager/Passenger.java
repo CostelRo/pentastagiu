@@ -73,7 +73,7 @@ public class Passenger implements Comparable<Passenger>
     public void setBirthday( LocalDate correctedBirthday )
     {
         if( correctedBirthday != null
-            && correctedBirthday.isBefore( AirportManager.getSingleton().getCurrentDateTime().toLocalDate() ) )
+            && correctedBirthday.isBefore( LocalDate.now() ) )
         {
             this.birthday = correctedBirthday;
         }
