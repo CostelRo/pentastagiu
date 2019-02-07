@@ -4,7 +4,6 @@ package airportmanager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -12,7 +11,7 @@ public class Flight implements Comparable<Flight>
 {
     // state
 
-    private String         flightNumber;                // used in this simple app. as the flight's unique identifier
+    private String         flightName;                // used in this simple app. as the flight's unique identifier
     private String         destinationAirportCode;
     private LocalDateTime  departureDateTime;
     private int            durationInSeconds;
@@ -23,13 +22,13 @@ public class Flight implements Comparable<Flight>
 
     // constructors
 
-    public Flight( String         flightNumber,
+    public Flight( String         flightName,
                    String         destinationAirportCode,
                    LocalDateTime  departureDateTime,
                    int            durationInSeconds,
                    int            maxPassengersCapacity )
     {
-        this.flightNumber           = flightNumber;
+        this.flightName             = flightName;
         this.destinationAirportCode = destinationAirportCode;
         this.departureDateTime      = departureDateTime;
         this.durationInSeconds      = durationInSeconds;
@@ -41,16 +40,16 @@ public class Flight implements Comparable<Flight>
 
     // getters & setters
 
-    public String getFlightNumber()
+    public String getFlightName()
     {
-        return flightNumber;
+        return flightName;
     }
 
-    public void setFlightNumber( String newFlightNumber )
+    public void setFlightName( String newFlightName )
     {
-        if( newFlightNumber != null )
+        if( newFlightName != null && FlightValidator.getSingleton().isValidFlightNameFormat( flightName ) )
         {
-            this.flightNumber = newFlightNumber;
+            this.flightName = newFlightName;
         }
     }
 
@@ -62,11 +61,8 @@ public class Flight implements Comparable<Flight>
 
     public void setDestinationAirportCode( String newDestinationAirportCode )
     {
-        FlightsManager flightsManager = FlightsManager.getSingleton( FlightValidator.getSingleton() );
-        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
-        AirportManager airportManager = AirportManager.getSingleton( flightsManager, passengersManager );
         if( newDestinationAirportCode != null
-            && airportManager.isAirportRegistered( newDestinationAirportCode ) )
+            && AirportManager.getSingleton().isAirportRegistered( newDestinationAirportCode ) )
         {
             this.destinationAirportCode = newDestinationAirportCode;
         }
@@ -146,16 +142,12 @@ public class Flight implements Comparable<Flight>
     }
 
 
-    public void removePassengerByIDFromThisFlight( int passengerID )
+    public void removePassenger( int passengerID )
     {
-        if( this.status == FlightStatus.SCHEDULED )
+        if( passengerID >= 0
+            && this.status == FlightStatus.SCHEDULED )
         {
-            // remove from current Flight
-            this.passengers.remove(passengerID);
-
-            // remove this flight from passenger's flight history
-            PassengersManager.getSingleton( PassengerValidator.getSingleton() )
-                             .getFlightsNamesByPassengerID().get( passengerID ).remove( this.flightNumber );
+            this.passengers.remove( passengerID );
         }
     }
 
@@ -172,7 +164,7 @@ public class Flight implements Comparable<Flight>
         if( other == null ) { return 1; }
         if( other == this ) { return 0; }
 
-        return this.departureDateTime.compareTo( other.departureDateTime);
+        return this.departureDateTime.compareTo( other.departureDateTime );
     }
 
 
@@ -184,30 +176,24 @@ public class Flight implements Comparable<Flight>
 
         Flight other = (Flight) obj;
 
-        return this.flightNumber.equals( other.flightNumber );
+        return this.flightName.equals( other.flightName );
     }
 
 
     @Override
     public int hashCode()
     {
-        return this.flightNumber.hashCode();
+        return this.flightName.hashCode();
     }
 
 
     @Override
     public String toString()
     {
-        FlightsManager flightsManager       = FlightsManager.getSingleton( FlightValidator.getSingleton() );
-        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
-        Optional<Airport> destination = AirportManager.getSingleton( flightsManager, passengersManager )
-                                                      .getDestinationAirports()
-                                             .stream()
-                                             .filter( airport -> airport.getCode().equals(this.destinationAirportCode) )
-                                             .findFirst();
+        Airport destinationAirport = AirportManager.getSingleton().getAirportByCode( this.destinationAirportCode );
 
-        return this.flightNumber
-               + " to " + destination.orElse( null )
+        return this.flightName
+               + " to " + destinationAirport
                + "\n= " + this.status.toString()
                + "\n(departure: "
                + this.departureDateTime.format( DateTimeFormatter

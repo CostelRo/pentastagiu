@@ -1,12 +1,9 @@
 package airportmanager;
 
 
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 
 
-@Component
 public class FlightValidator
 {
    // state
@@ -39,38 +36,46 @@ public class FlightValidator
 
     // other methods
 
-    public boolean isValidFlightNumberFormat( String flightNumber )
+    public boolean isValidFlightNameFormat( String flightNumber )
     {
         return (flightNumber != null)
                 && flightNumber.toUpperCase().matches( FlightValidator.VALID_FLIGHT_NUMBER_FORMAT );
     }
 
 
-    public boolean isFlightAlreadyRegistered( String flightNumber )
-    {
-        return flightNumber != null
-               && FlightsManager.getSingleton( FlightValidator.getSingleton() )
-                                .getFlightsByName().containsKey( flightNumber.toUpperCase() );
-    }
+//    public boolean isFlightAlreadyRegistered( String flightNumber )
+//    {
+//        return flightNumber != null
+//               && FlightsManager.getSingleton( FlightValidator.getSingleton() )
+//                                .getFlightsByName().containsKey( flightNumber.toUpperCase() );
+//
+//    }
 
 
-    public boolean isValidDestination( String airportCode )
-    {
-        FlightsManager flightsManager = FlightsManager.getSingleton( FlightValidator.getSingleton() );
-        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
-
-
-
-        System.out.println( AirportManager.getSingleton( flightsManager, passengersManager ).getDestinationAirports() );
-
-
-
-        return (airportCode != null)
-                && AirportManager.getSingleton( flightsManager, passengersManager )
-                                 .getDestinationAirports().stream()
-                                                          .anyMatch( airport -> airport.getCode()
-                                                                                       .equals(airportCode.toUpperCase()) );
-    }
+//    public boolean isValidDestination( String airportCode )
+//    {
+//        return AirportsArchive.getSingleton().getDestinationAirports().containsKey( airportCode );
+//
+////        AirportsArchive airportsArchive     = AirportsArchive.getSingleton();
+////        FlightsManager flightsManager       = FlightsManager.getSingleton( FlightValidator.getSingleton(),
+////                                                                           FlightsArchive.getSingleton() );
+////        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
+//
+//
+//
+////        System.out.println( AirportManager.getSingleton( airportsArchive, flightsManager, passengersManager )
+////                                          .getAirportsArchive() );
+//
+//
+//
+////        return (airportCode != null)
+////                && AirportManager.getSingleton( airportsArchive, flightsManager, passengersManager )
+////                                 .getAirportsArchive().stream()
+////                                                          .anyMatch( airport -> airport.getCode()
+////                                                                                       .equals(airportCode.toUpperCase()) );
+//
+//
+//    }
 
 
     public boolean isValidDepartureDateTime( LocalDateTime departureDateTime )

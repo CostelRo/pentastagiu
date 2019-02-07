@@ -1,46 +1,34 @@
 package airportmanager;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Component
 public class FlightsManager
 {
     // state
 
-    private static volatile  FlightsManager       singleton           = null;
-    private                  FlightValidator      flightValidator;
-    private                  Map<String, Flight>  flightsByName;
-    private                  Set<Flight>          deletedFlights;
+    private static volatile FlightsManager       singleton           = null;
+    private                 FlightValidator      flightValidator;
+    private                 Map<String, Flight>  flightsByName;
 
 
     // constructors
 
-    @Autowired
     private FlightsManager( FlightValidator flightValidator )
     {
         this.flightValidator = flightValidator;
         this.flightsByName   = new HashMap<>();
-        this.deletedFlights  = new HashSet<>();
     }
 
 
-    /**
-     * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
-     * After the creation of the singleton instance, any attempts to call this method with other parameters
-     * will be ignored and the existing singleton instance will be returned unchanged.
-     * @return the singleton instance of this class
-     */
     public static FlightsManager getSingleton( FlightValidator flightValidator )
     {
         if( FlightsManager.singleton == null )
@@ -58,14 +46,14 @@ public class FlightsManager
     }
 
 
-//    /**
-//     * This method returns the current singleton instance of this class, if it has already been defined.
-//     * @return the current singleton instance, if defined, or null
-//     */
-//    public static FlightsManager getSingleton()
-//    {
-//        return FlightsManager.singleton;
-//    }
+    /**
+      * This method returns the current singleton instance of this class, if it has already been defined.
+      * @return the current singleton instance, if defined, or null
+      */
+    public static FlightsManager getSingleton()
+    {
+        return FlightsManager.singleton;
+    }
 
 
     // getters & setters
@@ -75,46 +63,47 @@ public class FlightsManager
         return flightValidator;
     }
 
+
     public Map<String, Flight> getFlightsByName()
     {
         return flightsByName;
     }
 
-    public Set<Flight> getDeletedFlights()
-    {
-        return deletedFlights;
-    }
-
 
     // other methods
 
-    public void addFlight( String        flightNumber,
+    public void addFlight( String        flightName,
                            String        destinationAirportCode,
                            LocalDateTime departureDateTime,
                            int           flightDuration,
                            int           passengerCapacity )
     {
-        System.out.println( "[ping] " + flightNumber + " = " + flightValidator.isValidFlightNumberFormat( flightNumber ) + ", "
-                                                     + !flightValidator.isFlightAlreadyRegistered( flightNumber ) + "; "
-                            + destinationAirportCode + " = " + flightValidator.isValidDestination( destinationAirportCode ) + "; "
-                            + departureDateTime + " = " + flightValidator.isValidDepartureDateTime(departureDateTime) + "; "
-                            + flightDuration + " = " + flightValidator.isValidDuration( flightDuration ) + "; "
-                            + passengerCapacity + " = " + flightValidator.isValidPassengersCapacity( passengerCapacity ) );
 
-        if( flightValidator.isValidFlightNumberFormat( flightNumber )
-            && !flightValidator.isFlightAlreadyRegistered( flightNumber )
-            &&  flightValidator.isValidDestination( destinationAirportCode )
+
+//        // temp., for debugging
+//        System.out.println( "[ping] " + flightName + " = " + flightValidator.isValidFlightNameFormat( flightName ) + ", "
+//                                                     + !flightValidator.isFlightAlreadyRegistered( flightName ) + "; "
+//                            + destinationAirportCode + " = " + flightValidator.isValidDestination( destinationAirportCode ) + "; "
+//                            + departureDateTime + " = " + flightValidator.isValidDepartureDateTime(departureDateTime) + "; "
+//                            + flightDuration + " = " + flightValidator.isValidDuration( flightDuration ) + "; "
+//                            + passengerCapacity + " = " + flightValidator.isValidPassengersCapacity( passengerCapacity ) );
+
+
+
+        if( flightValidator.isValidFlightNameFormat( flightName )
+            && !this.isFlightAlreadyRegistered( flightName )
+            &&  AirportManager.getSingleton().isAirportRegistered( destinationAirportCode )
             &&  flightValidator.isValidDepartureDateTime(departureDateTime)
             &&  flightValidator.isValidDuration( flightDuration )
             &&  flightValidator.isValidPassengersCapacity( passengerCapacity ) )
         {
-            Flight newFlight = new Flight( flightNumber,
+            Flight newFlight = new Flight( flightName.toUpperCase(),
                                            destinationAirportCode,
                                            departureDateTime,
                                            flightDuration,
                                            passengerCapacity );
 
-            this.flightsByName.put( flightNumber, newFlight );
+            this.flightsByName.put( flightName, newFlight );
         }
         else
         {
@@ -123,24 +112,44 @@ public class FlightsManager
     }
 
 
-    public Set<Flight> searchFlightsByPartialNumber( String searchString )
+    private boolean isFlightAlreadyRegistered( String flightNumber )
     {
-        Set<Flight> result = new HashSet<>();
+        return flightNumber != null
+               && this.flightsByName.containsKey( flightNumber.toUpperCase() );
+    }
+
+
+    public boolean canValidFlightAcceptOneNewPassenger( String flightName )
+    {
+        boolean result = false;
+
+        if( flightName != null
+            && this.flightValidator.isValidFlightNameFormat( flightName )
+            && this.flightsByName.containsKey( flightName ) )
+        {
+            Flight flight = this.flightsByName.get( flightName.toUpperCase() );
+
+            result = (flight.getStatus() == FlightStatus.SCHEDULED
+                     && flight.getAvailableSeats() > 0);
+        }
+
+        return result;
+    }
+
+
+    public Flight searchFlightByName( String searchString )
+    {
+        Flight result = null;
 
         if( searchString != null && searchString.length() > 0 )
         {
-            String searchStringLowercased = searchString.toLowerCase();
+            String searchStringUppercased = searchString.toUpperCase();
+            List<String> validFlightNumber = this.flightsByName.keySet()
+                                                    .stream()
+                                                    .filter( flightName -> flightName.equals( searchStringUppercased ) )
+                                                    .collect( Collectors.toList() );
 
-            Set<String> flightNumbers = this.flightsByName.keySet()
-                                                          .stream()
-                                                          .filter( flightNumber -> flightNumber.toLowerCase()
-                                                                                   .contains( searchStringLowercased ) )
-                                                          .collect( Collectors.toSet() );
-
-            for (String flightNumber : flightNumbers)
-            {
-                result.add( this.flightsByName.get( flightNumber ) );
-            }
+            result = this.flightsByName.get( validFlightNumber.get( 0 ) );
         }
 
         return result;
@@ -172,8 +181,6 @@ public class FlightsManager
                                                 .filter( flight -> flight.getDepartureDateTime().toLocalDate()
                                                                                                 .isEqual(searchDate) )
                                                 .collect( Collectors.toSet() );
-
-
         }
 
         return result;
@@ -186,16 +193,17 @@ public class FlightsManager
 
         if( searchStartDate != null && searchEndDate != null )
         {
-            result = this.flightsByName.values().stream()
-                    .filter( flight ->
-                    {
-                        LocalDateTime flightDate = flight.getDepartureDateTime();
+            result = this.flightsByName.values()
+                        .stream()
+                        .filter( flight ->
+                        {
+                            LocalDateTime flightDate = flight.getDepartureDateTime();
 
-                        return flightDate.isEqual( searchStartDate )
-                               || flightDate.isEqual( searchEndDate )
-                               || ( flightDate.isAfter( searchStartDate ) && flightDate.isBefore( searchEndDate ) );
-                    } )
-                    .collect( Collectors.toSet() );
+                            return flightDate.isEqual( searchStartDate )
+                                   || flightDate.isEqual( searchEndDate )
+                                   || ( flightDate.isAfter( searchStartDate ) && flightDate.isBefore( searchEndDate ) );
+                        } )
+                        .collect( Collectors.toSet() );
         }
 
         return result;
@@ -204,50 +212,63 @@ public class FlightsManager
 
     public Set<Flight> searchFlightsByPassengerID( int searchPassengerID )
     {
-        Set<Flight> result = new HashSet<>(0);
+        Set<Flight> result = new HashSet<>();
 
-        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
-        if( searchPassengerID > 0  & passengersManager.getFlightsNamesByPassengerID()
-                                                      .get( searchPassengerID ) != null )
+        if( searchPassengerID >= 0 )
         {
-            result = passengersManager.getFlightsNamesByPassengerID().get( searchPassengerID )
-                                                         .stream()
-                                                         .map( flightNumber -> this.flightsByName.get( flightNumber ) )
-                                                         .collect( Collectors.toSet() );
+            result = this.flightsByName.values().stream()
+                                                .filter( flight -> flight.getPassengers().contains( searchPassengerID ) )
+                                                .collect( Collectors.toSet() );
+        }
+        else
+        {
+            System.out.println( "Incorrect passenger ID provided!" );
         }
 
         return result;
     }
 
 
-    public Map<Passenger, Set<Flight>> searchFlightsByPassengerPartialName( String nameFragment )
-    {
-        Map<Passenger, Set<Flight>> result = new HashMap<>();
+//    public Map<Passenger, Set<Flight>> searchFlightsByPassengerName( String nameFragment )
+//    {
+//        Map<Passenger, Set<Flight>> result = new HashMap<>();
+//
+//        for( Passenger psgr : PassengersManager.getSingleton( PassengerValidator.getSingleton() )
+//                                               .searchPassengersByName( nameFragment ) )
+//        {
+//            for( String flightNumber : psgr.getFlightsHistory() )
+//            {
+//                result.putIfAbsent( psgr, new HashSet<>() );
+//                result.get( psgr ).add( this.flightsByName.get( flightNumber ) );
+//            }
+//        }
+//
+//        return result;
+//    }
 
-        for( Passenger psgr : PassengersManager.getSingleton( PassengerValidator.getSingleton() )
-                                               .searchPassengersByPartialName( nameFragment ) )
-        {
-            for( String flightNumber : psgr.getFlightHistory() )
-            {
-                result.putIfAbsent( psgr, new HashSet<>() );
-                result.get( psgr ).add( this.flightsByName.get( flightNumber ) );
-            }
-        }
 
-        return result;
-    }
-
-
+    /**
+     * This method removes only a flight that hasn't started yet (so it isn't departed or already finished).
+     * Basically, only scheduled or canceled flights can be deleted.
+     * @param flightName the flight name
+     */
     public void removeFlight( String flightName )
     {
-        // the flight is kept in an archive and is still referenced from its passengers' flight histories
-        if( flightName != null )
+        // the flight is still kept in its passengers' flight histories
+        if( flightName != null
+            && this.isFlightAlreadyRegistered( flightName ) )
         {
-            Flight flightToRemove = this.getFlightsByName().get( flightName );
+            Flight flightToRemove = this.flightsByName.get( flightName );
 
-            this.flightsByName.remove( flightName );
-
-            this.deletedFlights.add( flightToRemove );
+            if( flightToRemove.getStatus() != FlightStatus.DEPARTED
+                && flightToRemove.getStatus() != FlightStatus.FINISHED )
+            {
+                this.flightsByName.remove( flightName );
+            }
+        }
+        else
+        {
+            System.out.println( "Flight with provided name not found!" );
         }
     }
 

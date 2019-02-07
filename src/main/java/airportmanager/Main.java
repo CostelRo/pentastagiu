@@ -9,33 +9,32 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class Main
 {
     public static void main( String[] args )
     {
-//        Airport localAirport = new Airport( "IAS", "Iasi", "Romania" );
-
         // SOLUTION 1 = prepare objects using pure Java
-//        FlightValidator flightValidator  = FlightValidator.getSingleton();
-//        FlightsManager  flightsManager   = FlightsManager.getSingleton( flightValidator );
-//        PassengerValidator passengerValidator = PassengerValidator.getSingleton();
-//        PassengersManager  passengersManager  = PassengersManager.getSingleton( passengerValidator );
-//        AirportManager    airportManager    = Main.startAirportManager( flightsManager,
-//                                                                        passengersManager,
-//                                                                        localAirport );
+//        Airport localAirport = new Airport( "IAS", "Iasi", "Romania" );
+//
+//        AirportManager    airportManager    = AirportManager.getSingleton(
+//                                                  localAirport,
+//                                                  FlightsManager.getSingleton( FlightValidator.getSingleton() ),
+//                                                  PassengersManager.getSingleton( PassengerValidator.getSingleton() ) );
+//
+//        FlightsManager    flightsManager    = airportManager.getFlightsManager();
+//        PassengersManager passengersManager = airportManager.getPassengersManager();
 
 
         // SOLUTION 2 = prepare objects using Spring
         ApplicationContext context = new ClassPathXmlApplicationContext( "airport-application-context.xml" );
-        AirportManager airportManager = (AirportManager) context.getBean( "airportManager" );
-//        airportManager.setLocalAirportOnce( localAirport );  // used by the ReportCreator class
-        FlightsManager flightsManager       = (FlightsManager) context.getBean( "flightsManager" );
-        PassengersManager passengersManager = (PassengersManager) context.getBean( "passengersManager" );
+
+        AirportManager      airportManager    = context.getBean( AirportManager.class );
+        FlightsManager      flightsManager    = airportManager.getFlightsManager();
+        PassengersManager   passengersManager = airportManager.getPassengersManager();
 
 
         // create & add the known airports
@@ -47,10 +46,10 @@ public class Main
                                                         new Airport( "TXL", "Berlin", "Germany" ),
                                                         new Airport( "HAM", "Hamburg", "Germany" ) ) );
 
-        knownAirports.forEach( airportManager::addNewAirport );
+        knownAirports.forEach( airportManager::addAirport);
 
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getDestinationAirports() ),
-                                                       "Airports",
+        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getDestinationAirports().values() ),
+                                                       "Destination airports",
                                                        LocalDateTime.now() ) );
 
 
@@ -80,7 +79,7 @@ public class Main
         // attempt to add a new Flight with unknown destination airport code
         // throws a RuntimeException and then stops the program
 /*
-        airportManager.addFlight( "GG666",
+        flightsManager.addFlight( "GG666",
                                   "xxx",
                                   LocalDateTime.now().plusHours( 4 ).plusMinutes( 10 ),
                                   (3*60*60),
@@ -89,43 +88,56 @@ public class Main
 
 
         // create & add new Passengers to active flights
-        passengersManager.addPassengerToAvailableFlight( "John",
-                                                          "Kelson",
-                                                          LocalDate.of( 1998, 8, 8 ),
-                                                          "KW345" );
-        passengersManager.addPassengerToAvailableFlight( "Harry",
-                                                          "Johnson",
-                                                          LocalDate.of( 1998, 8, 8 ),
-                                                          "JW1869" );
-        passengersManager.addPassengerToAvailableFlight( "Laura",
-                                                          "Digsby",
-                                                          LocalDate.of( 1998, 8, 8 ),
-                                                          "KW345" );
-        passengersManager.addPassengerToAvailableFlight( "Monica",
-                                                          "Brown",
-                                                          LocalDate.of( 1998, 8, 8 ),
-                                                          "DK2238" );
-        passengersManager.addPassengerToAvailableFlight( "James",
-                                                          "Shaw",
-                                                          LocalDate.of( 1998, 8, 8 ),
-                                                          "KW345" );
-        passengersManager.addPassengerToAvailableFlight( "Robert",
-                                                          "Law",
-                                                          LocalDate.of( 1998, 8, 8 ),
-                                                          "DK2238" );
+        Passenger passenger1 = new Passenger( "John",
+                                              "Kelson",
+                                              LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger1, "KW345" );
+
+        Passenger passenger2 = new Passenger( "Harry",
+                                              "Johnson",
+                                              LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger2, "JW1869" );
+
+        Passenger passenger3 = new Passenger( "Laura",
+                                                "Digsby",
+                                                LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger3, "KW345" );
+
+        Passenger passenger4 = new Passenger( "Monica",
+                                                "Brown",
+                                                LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger4, "DK2238" );
+
+        Passenger passenger5 = new Passenger( "James",
+                                                "Shaw",
+                                                LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger5, "KW345" );
+
+        Passenger passenger6 = new Passenger( "Robert",
+                                                "Law",
+                                                LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger6, "DK2238" );
+
+
+        // add known passenger to scheduled flight
+        System.out.println( "~~~ 3 ~~~" );
+        String flightName1 = "JW1869";
+        Flight flightToEdit1 = flightsManager.searchFlightByName( flightName1 );
+        FlightStatus previousStatus1 = flightToEdit1.getStatus();
+        flightToEdit1.setStatus( FlightStatus.SCHEDULED );
+
+        passengersManager.addPassengerToAvailableFlight( 5, flightName1 );
+        System.out.println( "Was passenger (#5) added? = "
+                            + ( flightsManager.searchFlightByName( flightName1 ).getPassengers() )
+                            + "\n" );
+
+        flightToEdit1.setStatus( previousStatus1 );
 
 
         // show the flight history of each known passengers
-        System.out.println( "~~~ 3 ~~~" );
+        System.out.println( "~~~ 4 ~~~" );
         System.out.println( ReportCreator.buildReport( passengersManager.getFlightHistoryForAllPassengers(),
                                                        "Passengers flight history",
-                                                       LocalDateTime.now() ) );
-
-
-        // show the passengers list for each known flight
-        System.out.println( "~~~ 4 ~~~" );
-        System.out.println( ReportCreator.buildReport( passengersManager.getPassengersForEachFlight(),
-                                                       "Passenger-ID list per flight",
                                                        LocalDateTime.now() ) );
 
 
@@ -149,21 +161,25 @@ public class Main
 
 
         // attempt to add a new Passenger to an already departed Flight is ignored
+        // attempt to add a known Passenger to an already departed Flight is ignored
         System.out.println( "~~~ 7 ~~~" );
-        String flightNumber1 = "dk2238";
-        Flight flightToEdit = new ArrayList<>( flightsManager.searchFlightsByPartialNumber( flightNumber1 ) ).get( 0 );
-        FlightStatus previousStatus = flightToEdit.getStatus();
-        flightToEdit.setStatus( FlightStatus.DEPARTED );
+        String flightName2 = "DK2238";
+        Flight flightToEdit2 = flightsManager.searchFlightByName( flightName2 );
+        FlightStatus previousStatus2 = flightToEdit2.getStatus();
+        flightToEdit2.setStatus( FlightStatus.DEPARTED );
 
-        passengersManager.addPassengerToAvailableFlight( "Gina",
-                                                         "Drobson",
-                                                         LocalDate.of( 1998, 8, 8 ),
-                                                         flightToEdit.getFlightNumber() );
-        System.out.println( "Was new passenger found? = "
-                            + (passengersManager.searchPassengersByPartialName( "drobson" ).size() > 0)
+        Passenger passenger7 = new Passenger( "Gina",
+                                                "Drobson",
+                                                LocalDate.of( 1998, 8, 8 ) );
+        passengersManager.addPassengerToAvailableFlight( passenger7, flightToEdit2.getFlightName() );
+        passengersManager.addPassengerToAvailableFlight( 5, flightName2 );
+        System.out.println( "Was new passenger added? = "
+                            + (passengersManager.searchPassengersByName( "drobson" ).size() > 0) );
+        System.out.println( "Was passenger (#5) added? = "
+                            + ( flightsManager.searchFlightByName( flightName2 ).getPassengers() )
                             + "\n" );
 
-        flightToEdit.setStatus( previousStatus );
+        flightToEdit2.setStatus( previousStatus2 );
 
 
         // search flights using various criteria
@@ -175,16 +191,15 @@ public class Main
 
 
         System.out.println( "~~~ 9 ~~~" );
-        String flightNameFragment = "3";
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( flightsManager
-                                                                .searchFlightsByPartialNumber( flightNameFragment ) ),
-                                                       "SEARCH: Flight names containing: \"" + flightNameFragment + "\"",
-                                                       LocalDateTime.now() ) );
+        String flightName = "Jw1869";
+        System.out.println( "SEARCH: Flight named: \"" + flightName + "\"\n" );
+        System.out.println( flightsManager.searchFlightByName( flightName ) );
+
 
         System.out.println( "~~~ 10 ~~~" );
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( flightsManager
-                                                                  .searchFlightsByStatus( FlightStatus.SCHEDULED ) ),
-                                                       "SEARCH: Scheduled Flights",
+        FlightStatus searchedStatus = FlightStatus.SCHEDULED;
+        System.out.println( ReportCreator.buildReport( new ArrayList<>(flightsManager.searchFlightsByStatus( searchedStatus )),
+                                                       "SEARCH: All " + searchedStatus.toString() + " flights",
                                                        LocalDateTime.now() ) );
 
 
@@ -192,7 +207,7 @@ public class Main
         LocalDateTime moment1 = LocalDateTime.now().minusMinutes( 30 );
         LocalDateTime moment2 = LocalDateTime.now().plusMinutes( 120 );
         System.out.println( ReportCreator.buildReport( new ArrayList<>( flightsManager
-                                                                    .searchFlightsByDateInterval( moment1, moment2 ) ),
+                                                                            .searchFlightsByDateInterval( moment1, moment2 ) ),
                                               "SEARCH: Flights with departure: " + moment1 + " --> " + moment2,
                                               LocalDateTime.now() ) );
 
@@ -205,22 +220,8 @@ public class Main
                                                        LocalDateTime.now() ) );
 
 
-        System.out.println( "~~~ 13 ~~~" );
-        String partialName1 = "aw";
-        Map<Passenger, Set<Flight>> searchResults = flightsManager.searchFlightsByPassengerPartialName( partialName1 );
-        List<Object> reportData = new ArrayList<>();
-        for( Passenger psgr : searchResults.keySet() )
-        {
-            List<Object> passengerReportData = new ArrayList<>( searchResults.get( psgr ) );
-            passengerReportData.add( 0, psgr );
-            reportData.add( passengerReportData );
-        }
-        System.out.println( "SEARCH: Flights by Passenger named like: \"" + partialName1 + "\"\n\n"
-                            + reportData + "\n" );
-
-
         // remove a flight
-        System.out.println( "~~~ 14 ~~~" );
+        System.out.println( "~~~ 13 ~~~" );
         flightsManager.removeFlight( "DK2238" );
         System.out.println( ReportCreator.buildReport( new ArrayList<>( flightsManager.getFlightsByName().values() ),
                                                        "Flights",
@@ -233,74 +234,53 @@ public class Main
                                                                     .searchFlightsByPassengerID( 6 ) ),
                                                        "SEARCH: Flights of passenger #" + 6,
                                                        LocalDateTime.now() ) );
-        System.out.println( flightsManager.getDeletedFlights() + "\n" );
 
 
         // search passengers using various criteria
-        System.out.println( "~~~ 15 ~~~" );
+        System.out.println( "~~~ 14 ~~~" );
         String partialName2 = "john";
         System.out.println( ReportCreator.buildReport( new ArrayList<>( passengersManager
-                                                                    .searchPassengersByPartialName( partialName2 ) ),
+                                                                    .searchPassengersByName( partialName2 ) ),
                                                        "SEARCH: Passengers named like: \"" + partialName2 + "\"",
                                                        LocalDateTime.now() ) );
 
 
-        System.out.println( "~~~ 16 ~~~" );
+        System.out.println( "~~~ 15 ~~~" );
         LocalDate birthday = LocalDate.of( 1998, 8, 8 );
         System.out.println( ReportCreator.buildReport( new ArrayList<>( passengersManager
                                                                             .searchPassengersByBirthday( birthday ) ),
-                                                       "SEARCH: Passengers with birthday: \"" + birthday + "\"",
+                                                       "SEARCH: Passengers with birthday: " + birthday,
                                                        LocalDateTime.now() ) );
 
 
-        System.out.println( "~~~ 17 ~~~" );
+        System.out.println( "~~~ 16 ~~~" );
         int passengerID_2 = 3;
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( passengersManager
-                                                                .searchDestinationsForOnePassenger( passengerID_2 )),
+        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager
+                                                                .getDestinationsForOnePassenger( passengerID_2 )),
                                                        "SEARCH: Destinations for passenger #" + passengerID_2,
                                                        LocalDateTime.now() ) );
 
 
-        System.out.println( "~~~ 18 ~~~" );
-        String flightNumber2 = "KW345";
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( passengersManager
-                                                                        .getPassengersFromOneFlight( flightNumber2 ) ),
-                                                       "SEARCH: Passengers from flight " + flightNumber2,
+        System.out.println( "~~~ 17 ~~~" );
+        String flightName3 = "KW345";
+        System.out.println( ReportCreator.buildReport( passengersManager.getPassengersByID().values()
+                                                                                            .stream()
+                                                            .filter( passenger -> passenger.getFlightsHistory()
+                                                                                           .contains( flightName3 ) )
+                                                            .collect( Collectors.toList() ),
+                                                       "SEARCH: Passengers from flight " + flightName3,
                                                        LocalDateTime.now() ) );
-
 
 
         // remove a passenger
-        System.out.println( "~~~ 19 ~~~" );
-        passengersManager.removePassengerByIDFromEverything( 2 );
-        System.out.println( ReportCreator.buildReport( passengersManager.getPassengersForEachFlight(),
-                                                       "Passenger-ID list per flight",
-                                                       LocalDateTime.now() ) );
-        System.out.println( passengersManager.getDeletedPassengers() + "\n" );
-
+        System.out.println( "~~~ 18 ~~~" );
+        int passengerID = 2;
+        passengersManager.removePassengerFromEverything( passengerID );
+        System.out.println( "Passengers data: " + passengersManager.getPassengersByID() );
 
 
 
         // finally, stop the application
-        Main.stopAirportManager();
-    }
-
-
-    private static AirportManager startAirportManager( FlightsManager flightsManager,
-                                                       PassengersManager passengersManager,
-                                                       Airport localAirport )
-    {
-        AirportManager newAirportManager = AirportManager.getSingleton( flightsManager, passengersManager );
-//        newAirportManager.setLocalAirportOnce( localAirport );
-
-        return newAirportManager;
-    }
-
-
-    private static void stopAirportManager()
-    {
-        System.out.println( ">> Everything OK? Let's stop!" );
-
         System.exit( 0 );
     }
 }

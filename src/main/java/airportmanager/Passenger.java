@@ -16,7 +16,7 @@ public class Passenger implements Comparable<Passenger>
     private         String      name;
     private         String      surname;
     private         LocalDate   birthday;
-    private         Set<String> flightHistory;
+    private         Set<String> flightsHistory;
 
 
     // constructors
@@ -31,7 +31,7 @@ public class Passenger implements Comparable<Passenger>
         this.name           = name;
         this.surname        = surname;
         this.birthday       = birthday;
-        this.flightHistory  = new HashSet<>();
+        this.flightsHistory = new HashSet<>();
     }
 
 
@@ -79,9 +79,9 @@ public class Passenger implements Comparable<Passenger>
         }
     }
 
-    public Set<String> getFlightHistory()
+    public Set<String> getFlightsHistory()
     {
-        return this.flightHistory;
+        return this.flightsHistory;
     }
 
 

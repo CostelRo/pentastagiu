@@ -1,44 +1,40 @@
 package airportmanager;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 
-@Component
 public class AirportManager
 {
     // state
 
-    private static volatile AirportManager    singleton    = null;
-    private                 Airport           localAirport = new Airport( "IAS", "Iasi", "Romania" );
-    private                 FlightsManager    flightsManager;
-    private                 PassengersManager passengersManager;
-    private                 Set<Airport>      destinationAirports;
+    private static volatile AirportManager       singleton              = null;
+    private                 Airport              localAirport;
+    private                 Map<String, Airport> destinationAirports;
+    private                 FlightsManager       flightsManager;
+    private                 PassengersManager    passengersManager;
 
 
     // constructors
 
-    @Autowired
-    private AirportManager( FlightsManager flightsManager, PassengersManager passengersManager )
+    private AirportManager( Airport           localAirport,
+                            FlightsManager    flightsManager,
+                            PassengersManager passengersManager )
     {
+        this.localAirport           = localAirport;
+        this.destinationAirports    = new HashMap<>();
         this.flightsManager         = flightsManager;
         this.passengersManager      = passengersManager;
-        this.destinationAirports    = new HashSet<>();
     }
 
 
-    /**
-     * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
-     * After the creation of the singleton instance, any attempts to call this method with other parameters
-     * will be ignored and the existing singleton instance will be returned unchanged.
-     * @return the singleton instance of this class
-     */
-    public static AirportManager getSingleton( FlightsManager flightsManager, PassengersManager passengersManager )
+    public static AirportManager getSingleton( Airport              localAirport,
+                                               FlightsManager       flightsManager,
+                                               PassengersManager    passengersManager )
     {
         if( AirportManager.singleton == null )
         {
@@ -46,7 +42,9 @@ public class AirportManager
             {
                 if( AirportManager.singleton == null )
                 {
-                    AirportManager.singleton = new AirportManager( flightsManager, passengersManager );
+                    AirportManager.singleton = new AirportManager( localAirport,
+                                                                   flightsManager,
+                                                                   passengersManager );
                 }
             }
         }
@@ -55,66 +53,68 @@ public class AirportManager
     }
 
 
-//    /**
-//     * This method returns the current singleton instance of this class, if it has already been defined.
-//     * @return the current singleton instance, if defined, or null
-//     */
-//    public static AirportManager getSingleton()
-//    {
-//        return AirportManager.singleton;
-//    }
+    /**
+     * This method returns the current singleton instance of this class, if it has already been defined.
+     * @return the current singleton instance, if defined, or null
+     */
+    public static AirportManager getSingleton()
+    {
+        return AirportManager.singleton;
+    }
 
 
     // getters & setters
-
-    public FlightsManager getFlightsManager()
-    {
-        return this.flightsManager;
-    }
-
-    public PassengersManager getPassengersManager()
-    {
-        return this.passengersManager;
-    }
 
     public Airport getLocalAirport()
     {
         return localAirport;
     }
 
-//    /**
-//     * Sets only once the unique Airport instance representing the local airport administered by this application
-//     * (as opposed to the other airports, used only as possible destinations for flights).
-//     * @param localAirport the local airport
-//     */
-//    public void setLocalAirportOnce( Airport localAirport )
-//    {
-//        if( this.localAirport == null && localAirport != null )
-//        {
-//            this.localAirport = localAirport;
-//        }
-//    }
-
-    public Set<Airport> getDestinationAirports()
+    public void setLocalAirport( Airport localAirport )
     {
-        return destinationAirports;
+        if( localAirport != null )
+        {
+            this.localAirport = localAirport;
+        }
+    }
+
+
+    public Map<String, Airport> getDestinationAirports()
+    {
+        return  destinationAirports;
+    }
+
+
+    public FlightsManager getFlightsManager()
+    {
+        return this.flightsManager;
+    }
+
+
+    public PassengersManager getPassengersManager()
+    {
+        return this.passengersManager;
     }
 
 
     // other methods
 
-    public void addNewAirport( Airport newAirport )
+//    public boolean isValidDestination( String airportCode )
+//    {
+//        return (airportCode != null)
+//                && this.destinationAirports.containsKey( airportCode );
+//    }
+
+
+    public void addAirport( Airport newAirport )
     {
-        if( newAirport != null )
+        if( newAirport != null && !this.isAirportRegistered( newAirport.getCode() ) )
         {
-            if( !this.isAirportRegistered( newAirport ) )
-            {
-                this.destinationAirports.add( newAirport );
-            }
-            else
-            {
-                System.out.println( "Airport already registered, will not be overwritten with the new data!" );
-            }
+            this.destinationAirports.put( newAirport.getCode(), newAirport );
+        }
+        else
+        {
+            System.out.println( "Airport already registered, will not be overwritten with the new data!" );
         }
     }
 
@@ -125,31 +125,38 @@ public class AirportManager
 
         if( airportCode != null )
         {
-            for( Airport a : this.destinationAirports )
-            {
-                if( a.getCode().equals( airportCode )  )
-                {
-                    result = a;
-                }
-            }
+            result = this.destinationAirports.get( airportCode );
         }
 
         return result;
     }
 
 
-    private boolean isAirportRegistered( Airport newAirport )
-    {
-        return newAirport != null
-               && this.destinationAirports.contains( newAirport );
-    }
-
-
     public boolean isAirportRegistered( String airportCode )
     {
         return airportCode != null
-               && this.destinationAirports.stream()
-                                          .anyMatch( airport -> airport.getCode().equals( airportCode ) );
+               && this.destinationAirports.containsKey( airportCode );
+    }
+
+
+    public Set<Airport> getDestinationsForOnePassenger( int passengerID )
+    {
+        Set<Airport> result = new HashSet<>();
+
+        if( passengerID >= 0 )
+        {
+            Set<String> passengerFlightHistory = this.passengersManager.getFlightsHistoryForOnePassenger( passengerID );
+
+            for( String flightName : passengerFlightHistory )
+            {
+                String airportCode = this.flightsManager.getFlightsByName().get( flightName )
+                                                                           .getDestinationAirportCode();
+
+                result.add( this.destinationAirports.get( airportCode ) );
+            }
+        }
+
+        return  result;
     }
 
 
@@ -193,8 +200,8 @@ public class AirportManager
                                                         {
                                                             flight.setStatus( FlightStatus.DEPARTED );
                                                         }
-                                                        // the following might happen when
-                                                        // time is reverted to the current time after certain tests
+                                                        // this might happen after certain tests, when time is reverted
+                                                        // back towards the past to the current time
                                                         else if( flight.getDepartureDateTime()
                                                                        .isAfter( newLocalDateTime ) )
                                                         {

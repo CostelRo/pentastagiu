@@ -1,12 +1,9 @@
 package airportmanager;
 
 
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 
 
-@Component
 public class PassengerValidator
 {
     // state
@@ -49,10 +46,15 @@ public class PassengerValidator
     }
 
 
-    public boolean isPassengerNew( Passenger passenger )
-    {
-        return passenger != null
-               && !PassengersManager.getSingleton( PassengerValidator.singleton ).getPassengersByID()
-                                                                                 .values().contains( passenger );
-    }
+//    public boolean isPassengerNew( Passenger passenger )
+//    {
+//        return passenger != null
+//               && PassengersArchive.getSingleton().getPassengerByID( passenger.getId() ) == null
+//               && !PassengersArchive.getSingleton().getDeletedPassengers().contains( passenger ) ;
+
+//                .getPassengersByID().values().contains( passenger );
+//    }
+
+
+
 }

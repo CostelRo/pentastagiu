@@ -32,9 +32,25 @@ public class Airport implements Comparable<Airport>
         return city;
     }
 
+    public void setCity( String newCity )
+    {
+        if( newCity != null && newCity.length() > 0 )
+        {
+            this.city = newCity;
+        }
+    }
+
     public String getCountry()
     {
         return country;
+    }
+
+    public void setCountry( String newCountry )
+    {
+        if( newCountry != null && newCountry.length() > 0 )
+        {
+            this.country = newCountry;
+        }
     }
 
 
