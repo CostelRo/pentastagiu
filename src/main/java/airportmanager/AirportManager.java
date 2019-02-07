@@ -4,6 +4,7 @@ package airportmanager;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,16 +54,6 @@ public class AirportManager
     }
 
 
-    /**
-     * This method returns the current singleton instance of this class, if it has already been defined.
-     * @return the current singleton instance, if defined, or null
-     */
-    public static AirportManager getSingleton()
-    {
-        return AirportManager.singleton;
-    }
-
-
     // getters & setters
 
     public Airport getLocalAirport()
@@ -70,26 +61,15 @@ public class AirportManager
         return localAirport;
     }
 
-    public void setLocalAirport( Airport localAirport )
-    {
-        if( localAirport != null )
-        {
-            this.localAirport = localAirport;
-        }
-    }
-
-
     public Map<String, Airport> getDestinationAirports()
     {
         return  destinationAirports;
     }
 
-
     public FlightsManager getFlightsManager()
     {
         return this.flightsManager;
     }
-
 
     public PassengersManager getPassengersManager()
     {
@@ -99,16 +79,9 @@ public class AirportManager
 
     // other methods
 
-//    public boolean isValidDestination( String airportCode )
-//    {
-//        return (airportCode != null)
-//                && this.destinationAirports.containsKey( airportCode );
-//    }
-
-
     public void addAirport( Airport newAirport )
     {
-        if( newAirport != null && !this.isAirportRegistered( newAirport.getCode() ) )
+        if( newAirport != null && !this.isAirportRegistered( newAirport ) )
         {
             this.destinationAirports.put( newAirport.getCode(), newAirport );
         }
@@ -132,10 +105,47 @@ public class AirportManager
     }
 
 
-    public boolean isAirportRegistered( String airportCode )
+    public boolean isAirportRegistered( Airport airport )
     {
-        return airportCode != null
-               && this.destinationAirports.containsKey( airportCode );
+        return airport != null
+               && this.destinationAirports.containsValue( airport );
+    }
+
+
+    public void addFlight( String           flightName,
+                           Airport          destinationAirport,
+                           LocalDateTime    departureDateTime,
+                           int              flightDuration ,
+                           int              passengerCapacity )
+    {
+        if( this.isAirportRegistered( destinationAirport ) )
+        {
+            this.flightsManager.addFlight( flightName,
+                                           destinationAirport,
+                                           departureDateTime,
+                                           flightDuration,
+                                           passengerCapacity );
+        }
+    }
+
+
+    public void addPassengerToAvailableFlight( Passenger passenger, String flightName )
+    {
+        if( passenger != null
+            && flightName != null )
+        {
+            this.passengersManager.addPassengerToAvailableFlight( this.flightsManager, passenger, flightName );
+        }
+    }
+
+
+    public void addPassengerToAvailableFlight( int passengerID, String flightName )
+    {
+        if( passengerID >= 0
+            && flightName != null )
+        {
+            this.passengersManager.addPassengerToAvailableFlight( this.flightsManager, passengerID, flightName );
+        }
     }
 
 
@@ -149,14 +159,23 @@ public class AirportManager
 
             for( String flightName : passengerFlightHistory )
             {
-                String airportCode = this.flightsManager.getFlightsByName().get( flightName )
-                                                                           .getDestinationAirportCode();
-
-                result.add( this.destinationAirports.get( airportCode ) );
+                result.add( this.flightsManager.getFlightsByName().get( flightName ).getDestinationAirport() );
             }
         }
 
         return  result;
+    }
+
+
+    public List<Object> getFlightHistoryForAllPassengers()
+    {
+        return this.passengersManager.getFlightHistoryForAllPassengers();
+    }
+
+
+    public void removePassengerFromEverything( int passengerID )
+    {
+        this.passengersManager.removePassengerFromEverything( this.flightsManager, passengerID );
     }
 
 

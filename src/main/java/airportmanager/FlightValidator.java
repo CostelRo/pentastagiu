@@ -33,7 +33,6 @@ public class FlightValidator
     }
 
 
-
     // other methods
 
     public boolean isValidFlightNameFormat( String flightNumber )
@@ -41,41 +40,6 @@ public class FlightValidator
         return (flightNumber != null)
                 && flightNumber.toUpperCase().matches( FlightValidator.VALID_FLIGHT_NUMBER_FORMAT );
     }
-
-
-//    public boolean isFlightAlreadyRegistered( String flightNumber )
-//    {
-//        return flightNumber != null
-//               && FlightsManager.getSingleton( FlightValidator.getSingleton() )
-//                                .getFlightsByName().containsKey( flightNumber.toUpperCase() );
-//
-//    }
-
-
-//    public boolean isValidDestination( String airportCode )
-//    {
-//        return AirportsArchive.getSingleton().getDestinationAirports().containsKey( airportCode );
-//
-////        AirportsArchive airportsArchive     = AirportsArchive.getSingleton();
-////        FlightsManager flightsManager       = FlightsManager.getSingleton( FlightValidator.getSingleton(),
-////                                                                           FlightsArchive.getSingleton() );
-////        PassengersManager passengersManager = PassengersManager.getSingleton( PassengerValidator.getSingleton() );
-//
-//
-//
-////        System.out.println( AirportManager.getSingleton( airportsArchive, flightsManager, passengersManager )
-////                                          .getAirportsArchive() );
-//
-//
-//
-////        return (airportCode != null)
-////                && AirportManager.getSingleton( airportsArchive, flightsManager, passengersManager )
-////                                 .getAirportsArchive().stream()
-////                                                          .anyMatch( airport -> airport.getCode()
-////                                                                                       .equals(airportCode.toUpperCase()) );
-//
-//
-//    }
 
 
     public boolean isValidDepartureDateTime( LocalDateTime departureDateTime )

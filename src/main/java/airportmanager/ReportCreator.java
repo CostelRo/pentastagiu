@@ -40,7 +40,8 @@ public class ReportCreator
      */
     public static String buildReport( List<Object>  sourceData,
                                       String        subject,
-                                      LocalDateTime reportTime )
+                                      LocalDateTime reportTime,
+                                      Airport       localAirport )
     {
         if( sourceData == null || sourceData.size() == 0 || subject == null || reportTime == null )
         {
@@ -51,7 +52,7 @@ public class ReportCreator
         String formattedReportTime = reportTime.format( DateTimeFormatter.ofPattern( DATE_TIME_FORMATTER ) );
         String generalTitle = "      REPORT [" + formattedReportTime + "]";
 
-        String localAirportInfo = "       == " + AirportManager.getSingleton().getLocalAirport().toString() + " ==";
+        String localAirportInfo = "           == " + localAirport.toString() + " ==";
 
         StringBuilder collector = new StringBuilder( ReportCreator.SEPARATOR1);
         collector.append( localAirportInfo );

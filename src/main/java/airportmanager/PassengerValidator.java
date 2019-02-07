@@ -44,17 +44,4 @@ public class PassengerValidator
     {
         return (birthday!= null) && birthday.isBefore( LocalDate.now() );
     }
-
-
-//    public boolean isPassengerNew( Passenger passenger )
-//    {
-//        return passenger != null
-//               && PassengersArchive.getSingleton().getPassengerByID( passenger.getId() ) == null
-//               && !PassengersArchive.getSingleton().getDeletedPassengers().contains( passenger ) ;
-
-//                .getPassengersByID().values().contains( passenger );
-//    }
-
-
-
 }

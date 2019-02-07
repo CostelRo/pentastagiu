@@ -12,7 +12,7 @@ public class Flight implements Comparable<Flight>
     // state
 
     private String         flightName;                // used in this simple app. as the flight's unique identifier
-    private String         destinationAirportCode;
+    private Airport        destinationAirport;
     private LocalDateTime  departureDateTime;
     private int            durationInSeconds;
     private int            maxPassengersCapacity;
@@ -23,13 +23,13 @@ public class Flight implements Comparable<Flight>
     // constructors
 
     public Flight( String         flightName,
-                   String         destinationAirportCode,
+                   Airport        destinationAirport,
                    LocalDateTime  departureDateTime,
                    int            durationInSeconds,
                    int            maxPassengersCapacity )
     {
         this.flightName             = flightName;
-        this.destinationAirportCode = destinationAirportCode;
+        this.destinationAirport     = destinationAirport;
         this.departureDateTime      = departureDateTime;
         this.durationInSeconds      = durationInSeconds;
         this.maxPassengersCapacity  = maxPassengersCapacity;
@@ -54,17 +54,16 @@ public class Flight implements Comparable<Flight>
     }
 
 
-    public String getDestinationAirportCode()
+    public Airport getDestinationAirport()
     {
-        return destinationAirportCode;
+        return destinationAirport;
     }
 
-    public void setDestinationAirportCode( String newDestinationAirportCode )
+    public void setDestinationAirport( Airport newDestinationAirport )
     {
-        if( newDestinationAirportCode != null
-            && AirportManager.getSingleton().isAirportRegistered( newDestinationAirportCode ) )
+        if( newDestinationAirport != null )
         {
-            this.destinationAirportCode = newDestinationAirportCode;
+            this.destinationAirport = newDestinationAirport;
         }
     }
 
@@ -190,10 +189,8 @@ public class Flight implements Comparable<Flight>
     @Override
     public String toString()
     {
-        Airport destinationAirport = AirportManager.getSingleton().getAirportByCode( this.destinationAirportCode );
-
         return this.flightName
-               + " to " + destinationAirport
+               + " to " + this.destinationAirport
                + "\n= " + this.status.toString()
                + "\n(departure: "
                + this.departureDateTime.format( DateTimeFormatter

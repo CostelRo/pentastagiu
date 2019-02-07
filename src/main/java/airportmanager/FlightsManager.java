@@ -46,23 +46,12 @@ public class FlightsManager
     }
 
 
-    /**
-      * This method returns the current singleton instance of this class, if it has already been defined.
-      * @return the current singleton instance, if defined, or null
-      */
-    public static FlightsManager getSingleton()
-    {
-        return FlightsManager.singleton;
-    }
-
-
     // getters & setters
 
     public FlightValidator getFlightValidator()
     {
         return flightValidator;
     }
-
 
     public Map<String, Flight> getFlightsByName()
     {
@@ -72,33 +61,20 @@ public class FlightsManager
 
     // other methods
 
-    public void addFlight( String        flightName,
-                           String        destinationAirportCode,
-                           LocalDateTime departureDateTime,
-                           int           flightDuration,
-                           int           passengerCapacity )
+    public void addFlight( String           flightName,
+                           Airport          destinationAirport,
+                           LocalDateTime    departureDateTime,
+                           int              flightDuration,
+                           int              passengerCapacity )
     {
-
-
-//        // temp., for debugging
-//        System.out.println( "[ping] " + flightName + " = " + flightValidator.isValidFlightNameFormat( flightName ) + ", "
-//                                                     + !flightValidator.isFlightAlreadyRegistered( flightName ) + "; "
-//                            + destinationAirportCode + " = " + flightValidator.isValidDestination( destinationAirportCode ) + "; "
-//                            + departureDateTime + " = " + flightValidator.isValidDepartureDateTime(departureDateTime) + "; "
-//                            + flightDuration + " = " + flightValidator.isValidDuration( flightDuration ) + "; "
-//                            + passengerCapacity + " = " + flightValidator.isValidPassengersCapacity( passengerCapacity ) );
-
-
-
         if( flightValidator.isValidFlightNameFormat( flightName )
             && !this.isFlightAlreadyRegistered( flightName )
-            &&  AirportManager.getSingleton().isAirportRegistered( destinationAirportCode )
             &&  flightValidator.isValidDepartureDateTime(departureDateTime)
             &&  flightValidator.isValidDuration( flightDuration )
             &&  flightValidator.isValidPassengersCapacity( passengerCapacity ) )
         {
             Flight newFlight = new Flight( flightName.toUpperCase(),
-                                           destinationAirportCode,
+                                           destinationAirport,
                                            departureDateTime,
                                            flightDuration,
                                            passengerCapacity );
@@ -227,24 +203,6 @@ public class FlightsManager
 
         return result;
     }
-
-
-//    public Map<Passenger, Set<Flight>> searchFlightsByPassengerName( String nameFragment )
-//    {
-//        Map<Passenger, Set<Flight>> result = new HashMap<>();
-//
-//        for( Passenger psgr : PassengersManager.getSingleton( PassengerValidator.getSingleton() )
-//                                               .searchPassengersByName( nameFragment ) )
-//        {
-//            for( String flightNumber : psgr.getFlightsHistory() )
-//            {
-//                result.putIfAbsent( psgr, new HashSet<>() );
-//                result.get( psgr ).add( this.flightsByName.get( flightNumber ) );
-//            }
-//        }
-//
-//        return result;
-//    }
 
 
     /**

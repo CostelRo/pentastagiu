@@ -137,9 +137,9 @@ public class Passenger implements Comparable<Passenger>
     @Override
     public String toString()
     {
-        return "[id " + this.id + "]"
-               + " " + this.name
-               + " " + this.surname.toUpperCase()
+        return "[#" + this.id + "]"
+                + " " + this.surname.toUpperCase()
+                + ", " + this.name
                + " (birthday: "
                + this.birthday.format( DateTimeFormatter.ofPattern( ReportCreator.getDateFormatter() ) ) + ")";
     }
