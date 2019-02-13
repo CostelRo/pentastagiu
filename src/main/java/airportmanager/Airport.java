@@ -1,18 +1,31 @@
 package airportmanager;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+
+@Component
+@Qualifier( "localAirport" )
 public class Airport implements Comparable<Airport>
 {
     // state
 
     private String code;
+
     private String city;
+
     private String country;
 
 
     // constructors
 
-    public Airport( String code, String city, String country )
+    @Autowired
+    public Airport( @Value( "IAS" ) String code,
+                    @Value( "Iasi" ) String city,
+                    @Value( "Romania" ) String country )
     {
         this.code    = code.toUpperCase();
         this.city    = city;

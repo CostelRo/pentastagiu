@@ -9,6 +9,9 @@
 
     <context:component-scan base-package="airportmanager" />
 
+    <!-- SPRING with annotations: nothing needed here -->
+
+    <!-- SPRING with XML:
     <bean id="localAirport" class="airportmanager.Airport">
         <constructor-arg index="0" value="IAS" />
         <constructor-arg index="1" value="Iasi" />
@@ -30,5 +33,8 @@
         <constructor-arg ref="flightsManager" />
         <constructor-arg ref="passengersManager" />
     </bean>
+    -->
+
+
 
 </beans>

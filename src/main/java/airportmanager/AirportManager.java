@@ -1,6 +1,10 @@
 package airportmanager;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+@Component
 public class AirportManager
 {
     // state
@@ -33,7 +38,8 @@ public class AirportManager
     }
 
 
-    public static AirportManager getSingleton( Airport              localAirport,
+    @Autowired
+    public static AirportManager getSingleton( @Qualifier( "localAirport" ) Airport localAirport,
                                                FlightsManager       flightsManager,
                                                PassengersManager    passengersManager )
     {

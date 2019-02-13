@@ -1,6 +1,9 @@
 package airportmanager;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+@Component
 public class PassengersManager
 {
     // state
@@ -32,6 +36,7 @@ public class PassengersManager
      * will be ignored and the existing singleton instance will be returned unchanged.
      * @return the singleton instance of this class
      */
+    @Autowired
     public static PassengersManager getSingleton( PassengerValidator passengerValidator )
     {
         if( PassengersManager.singleton == null )
