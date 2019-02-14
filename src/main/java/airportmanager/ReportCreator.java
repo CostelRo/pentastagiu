@@ -50,11 +50,12 @@ public class ReportCreator
 
         // create the report
         String formattedReportTime = reportTime.format( DateTimeFormatter.ofPattern( DATE_TIME_FORMATTER ) );
-        String generalTitle = "      REPORT [" + formattedReportTime + "]";
+        String generalTitle = "     REPORT [" + formattedReportTime + "]";
 
-        String localAirportInfo = "           == " + localAirport.toString() + " ==";
+        String localAirportInfo = "       == " + localAirport.toString() + " ==";
 
         StringBuilder collector = new StringBuilder( ReportCreator.SEPARATOR1);
+        collector.append( "\n" );
         collector.append( localAirportInfo );
         collector.append( "\n" );
         collector.append( generalTitle );

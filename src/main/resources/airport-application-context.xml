@@ -55,7 +55,7 @@
         </property>
         <property name="jpaProperties">
             <props>
-                <prop key="hibernate.hbm2ddl.auto">create</prop> <!-- after DB tables creation, change to: validate -->
+                <prop key="hibernate.hbm2ddl.auto">validate</prop> <!-- create; after tables creation inDB: validate -->
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>

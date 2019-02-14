@@ -19,36 +19,37 @@ public class FlightsManager
 {
     // state
 
-    private static volatile FlightsManager       singleton           = null;
+//    private static volatile FlightsManager       singleton           = null;
     private                 FlightValidator      flightValidator;
     private                 Map<String, Flight>  flightsByName;
 
 
     // constructors
 
-    private FlightsManager( FlightValidator flightValidator )
+//    private FlightsManager( FlightValidator flightValidator )
+    @Autowired
+    public FlightsManager( FlightValidator flightValidator )
     {
         this.flightValidator = flightValidator;
         this.flightsByName   = new HashMap<>();
     }
 
 
-    @Autowired
-    public static FlightsManager getSingleton( FlightValidator flightValidator )
-    {
-        if( FlightsManager.singleton == null )
-        {
-            synchronized( FlightsManager.class )
-            {
-                if( FlightsManager.singleton == null )
-                {
-                    FlightsManager.singleton = new FlightsManager( flightValidator );
-                }
-            }
-        }
-
-        return FlightsManager.singleton;
-    }
+//    public static FlightsManager getSingleton( FlightValidator flightValidator )
+//    {
+//        if( FlightsManager.singleton == null )
+//        {
+//            synchronized( FlightsManager.class )
+//            {
+//                if( FlightsManager.singleton == null )
+//                {
+//                    FlightsManager.singleton = new FlightsManager( flightValidator );
+//                }
+//            }
+//        }
+//
+//        return FlightsManager.singleton;
+//    }
 
 
     // getters & setters

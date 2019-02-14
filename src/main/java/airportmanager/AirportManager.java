@@ -2,7 +2,6 @@ package airportmanager;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,7 @@ public class AirportManager
 {
     // state
 
-    private static volatile AirportManager       singleton              = null;
+//    private static volatile AirportManager       singleton              = null;
     private                 Airport              localAirport;
     private                 Map<String, Airport> destinationAirports;
     private                 FlightsManager       flightsManager;
@@ -27,9 +26,13 @@ public class AirportManager
 
     // constructors
 
-    private AirportManager( Airport           localAirport,
-                            FlightsManager    flightsManager,
-                            PassengersManager passengersManager )
+//    private AirportManager( Airport           localAirport,
+//                            FlightsManager    flightsManager,
+//                            PassengersManager passengersManager )
+    @Autowired
+    public AirportManager( Airport           localAirport,
+                           FlightsManager    flightsManager,
+                           PassengersManager passengersManager )
     {
         this.localAirport           = localAirport;
         this.destinationAirports    = new HashMap<>();
@@ -38,26 +41,25 @@ public class AirportManager
     }
 
 
-    @Autowired
-    public static AirportManager getSingleton( @Qualifier( "localAirport" ) Airport localAirport,
-                                               FlightsManager       flightsManager,
-                                               PassengersManager    passengersManager )
-    {
-        if( AirportManager.singleton == null )
-        {
-            synchronized( AirportManager.class )
-            {
-                if( AirportManager.singleton == null )
-                {
-                    AirportManager.singleton = new AirportManager( localAirport,
-                                                                   flightsManager,
-                                                                   passengersManager );
-                }
-            }
-        }
-
-        return AirportManager.singleton;
-    }
+//    public static AirportManager getSingleton( @Qualifier( "localAirport" ) Airport localAirport,
+//                                               FlightsManager       flightsManager,
+//                                               PassengersManager    passengersManager )
+//    {
+//        if( AirportManager.singleton == null )
+//        {
+//            synchronized( AirportManager.class )
+//            {
+//                if( AirportManager.singleton == null )
+//                {
+//                    AirportManager.singleton = new AirportManager( localAirport,
+//                                                                   flightsManager,
+//                                                                   passengersManager );
+//                }
+//            }
+//        }
+//
+//        return AirportManager.singleton;
+//    }
 
 
     // getters & setters

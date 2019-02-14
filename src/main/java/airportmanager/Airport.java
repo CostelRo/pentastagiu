@@ -20,6 +20,11 @@ public class Airport implements Comparable<Airport>
 
     // constructors
 
+    public Airport()
+    {
+        // default constructor, only useful for Hibernate
+    }
+
     @Autowired
     public Airport( @Value( "IAS" ) String code,
                     @Value( "Iasi" ) String city,

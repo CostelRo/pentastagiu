@@ -17,41 +17,42 @@ import java.util.stream.Collectors;
 public class PassengersManager
 {
     // state
-    private static volatile PassengersManager           singleton                   = null;
+//    private static volatile PassengersManager           singleton                   = null;
     private                 PassengerValidator          passengerValidator;
     private                 Map<Integer, Passenger>     passengersByID;
 
 
     //constructors
-    private PassengersManager( PassengerValidator passengerValidator )
+//    private PassengersManager( PassengerValidator passengerValidator )
+    @Autowired
+    public PassengersManager( PassengerValidator passengerValidator )
     {
         this.passengerValidator = passengerValidator;
         this.passengersByID     = new HashMap<>();
     }
 
 
-    /**
-     * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
-     * After the creation of the singleton instance, any attempts to call this method with other parameters
-     * will be ignored and the existing singleton instance will be returned unchanged.
-     * @return the singleton instance of this class
-     */
-    @Autowired
-    public static PassengersManager getSingleton( PassengerValidator passengerValidator )
-    {
-        if( PassengersManager.singleton == null )
-        {
-            synchronized( PassengersManager.class )
-            {
-                if( PassengersManager.singleton == null )
-                {
-                    PassengersManager.singleton = new PassengersManager( passengerValidator );
-                }
-            }
-        }
-
-        return PassengersManager.singleton;
-    }
+//    /**
+//     * This method creates if needed and returns a unique instance of the class, implementing the Singleton pattern.
+//     * After the creation of the singleton instance, any attempts to call this method with other parameters
+//     * will be ignored and the existing singleton instance will be returned unchanged.
+//     * @return the singleton instance of this class
+//     */
+//    public static PassengersManager getSingleton( PassengerValidator passengerValidator )
+//    {
+//        if( PassengersManager.singleton == null )
+//        {
+//            synchronized( PassengersManager.class )
+//            {
+//                if( PassengersManager.singleton == null )
+//                {
+//                    PassengersManager.singleton = new PassengersManager( passengerValidator );
+//                }
+//            }
+//        }
+//
+//        return PassengersManager.singleton;
+//    }
 
 
     // getters & setters

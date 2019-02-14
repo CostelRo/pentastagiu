@@ -16,7 +16,7 @@ public class Main
 {
     public static void main( String[] args )
     {
-        // SOLUTION 1 = prepare objects using pure Java
+        // SOLUTION 1 = prepare objects using pure Java, with singletons
 //        Airport localAirport = new Airport( "IAS", "Iasi", "Romania" );
 //
 //        AirportManager    airportManager    = AirportManager.getSingleton(
