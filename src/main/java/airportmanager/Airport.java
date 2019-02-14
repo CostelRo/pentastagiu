@@ -14,9 +14,7 @@ public class Airport implements Comparable<Airport>
     // state
 
     private String code;
-
     private String city;
-
     private String country;
 
 

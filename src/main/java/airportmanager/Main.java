@@ -27,7 +27,7 @@ public class Main
 
         // SOLUTION 2 = prepare objects using Spring
         ApplicationContext context = new ClassPathXmlApplicationContext( "airport-application-context.xml" );
-        AirportManager      airportManager    = context.getBean( AirportManager.class );
+        AirportManager airportManager = context.getBean( AirportManager.class );
 
 
         // create & add the known airports
