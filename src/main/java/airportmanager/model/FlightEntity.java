@@ -38,7 +38,7 @@ public class FlightEntity extends AbstractBaseEntity
     @Column( name = "capacity" )
     private int maxPassengersCapacity;
 
-    @Column( name = "status" )
+//    @Column( name = "status" )
     @Enumerated( EnumType.STRING )
     private FlightStatus status = FlightStatus.SCHEDULED;
 

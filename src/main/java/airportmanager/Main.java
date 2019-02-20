@@ -1,15 +1,13 @@
 package airportmanager;
 
 
+import airportmanager.service.AirportServiceImpl;
+import airportmanager.service.api.AirportService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class Main
@@ -26,8 +24,13 @@ public class Main
 
 
         // SOLUTION 2 = prepare objects using Spring
+//        ApplicationContext context = new ClassPathXmlApplicationContext( "airport-application-context.xml" );
+//        AirportManager airportManager = context.getBean( AirportManager.class );
+
+
+        // SOLUTION 3 = using Spring + Hibernate
         ApplicationContext context = new ClassPathXmlApplicationContext( "airport-application-context.xml" );
-        AirportManager airportManager = context.getBean( AirportManager.class );
+        AirportService airportService = context.getBean( AirportServiceImpl.class );
 
 
         // create & add the known airports
@@ -37,10 +40,16 @@ public class Main
                                                      new Airport( "NCE", "Nice", "France" ),
                                                      new Airport( "TXL", "Berlin", "Germany" ),
                                                      new Airport( "HAM", "Hamburg", "Germany" ) );
+        // for SOLUTION 1 & 2
+//        knownAirports.forEach( airportManager::addAirport);
 
-        knownAirports.forEach( airportManager::addAirport);
 
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getDestinationAirports()
+        // for SOLUTION 3
+        knownAirports.forEach( airport -> System.out.println( airportService.createAirport( airport.getCode(),
+                                                                                            airport.getCity(),
+                                                                                            airport.getCountry() ) ) );
+
+/*        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getDestinationAirports()
                                                                                       .values() ),
                                                        "Destination airports",
                                                        LocalDateTime.now(),
@@ -74,13 +83,11 @@ public class Main
 
         // attempt to add a new Flight with unknown destination airport code
         // throws a RuntimeException and then stops the program
-/*
-        airportManager.addFlight( "GG666",
-                                  null,
-                                  LocalDateTime.now().plusHours( 4 ).plusMinutes( 10 ),
-                                  (3*60*60),
-                                  200 );
-*/
+//        airportManager.addFlight( "GG666",
+//                                  null,
+//                                  LocalDateTime.now().plusHours( 4 ).plusMinutes( 10 ),
+//                                  (3*60*60),
+//                                  200 );
 
 
         // create & add new Passengers to active flights
@@ -292,7 +299,7 @@ public class Main
         int passengerID = 2;
         airportManager.removePassengerFromEverything( passengerID );
         System.out.println( "Passengers data: " + airportManager.getPassengersManager().getPassengersByID() );
-
+*/
 
 
         // finally, stop the application

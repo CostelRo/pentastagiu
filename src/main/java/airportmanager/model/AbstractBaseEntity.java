@@ -34,4 +34,9 @@ public class AbstractBaseEntity
     {
         return id;
     }
+
+    public void setId( Long id )
+    {
+        this.id = id;
+    }
 }
