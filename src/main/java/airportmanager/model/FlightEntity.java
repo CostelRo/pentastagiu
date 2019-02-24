@@ -29,8 +29,8 @@ public class FlightEntity extends AbstractBaseEntity
 //    @Embedded
     @ManyToOne( targetEntity = AirportEntity.class )
     @JoinColumn( name = "destinationAirport_id" )
-//    private Airport destinationAirport;
-    private Long destinationAirport;
+    private AirportEntity destinationAirport;
+//    private Long destinationAirport;
 
     @Column( name = "departure" )
     private LocalDateTime departureDateTime;
@@ -41,8 +41,8 @@ public class FlightEntity extends AbstractBaseEntity
     @Column( name = "capacity" )
     private int maxPassengersCapacity;
 
-//    @Column( name = "status" )
     @Enumerated( EnumType.STRING )
+    @Column( name = "status" )
     private FlightStatus status = FlightStatus.SCHEDULED;
 
     @ManyToMany( targetEntity = PassengerEntity.class )
@@ -57,13 +57,13 @@ public class FlightEntity extends AbstractBaseEntity
     }
 
     public FlightEntity( String         name,
-                         Long           destinationAirportId,
+                         AirportEntity  destinationAirport,
                          LocalDateTime  departureDateTime,
                          int            durationInSeconds,
                          int            maxPassengersCapacity )
     {
         this.name                   = name;
-        this.destinationAirport     = destinationAirportId;
+        this.destinationAirport     = destinationAirport;
         this.departureDateTime      = departureDateTime;
         this.durationInSeconds      = durationInSeconds;
         this.maxPassengersCapacity  = maxPassengersCapacity;
@@ -86,16 +86,16 @@ public class FlightEntity extends AbstractBaseEntity
     }
 
 
-    public Long getDestinationAirportId()
+    public AirportEntity getDestinationAirportId()
     {
         return destinationAirport;
     }
 
-    public void setDestinationAirportId( Long destinationAirportId )
+    public void setDestinationAirportId( AirportEntity destinationAirport )
     {
-        if( destinationAirport != null )
+        if( this.destinationAirport != null )
         {
-            this.destinationAirport = destinationAirportId;
+            this.destinationAirport = destinationAirport;
         }
     }
 

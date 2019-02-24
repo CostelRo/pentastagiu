@@ -3,11 +3,13 @@ package airportmanager.repository;
 
 import airportmanager.model.AirportEntity;
 import airportmanager.repository.api.AirportRepository;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import java.util.List;
 
 
@@ -57,6 +59,22 @@ public class AirportRepositoryImpl implements AirportRepository
         {
             this.entityManager.merge( airportEntity );
         }
+    }
+
+
+    @Override
+    public AirportEntity findById( Long airportId )
+    {
+        if( airportId != null )
+        {
+            Query query = this.entityManager.createQuery( "SELECT port FROM AirportEntity port"
+                                                             + " WHERE port.id = :airportId" );
+            query.setParameter( "airportId", airportId );
+
+            return (AirportEntity) query.getSingleResult();
+        }
+
+        return  null;
     }
 
 

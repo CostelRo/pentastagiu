@@ -1,6 +1,7 @@
 package airportmanager.service;
 
 
+import airportmanager.model.AirportEntity;
 import airportmanager.model.FlightEntity;
 import airportmanager.model.PassengerEntity;
 import airportmanager.repository.api.FlightRepository;
@@ -27,14 +28,25 @@ public class FlightServiceImpl implements FlightService
 
     @Override
     public FlightEntity create( String          flightName,
-                                Long            destinationId,
+                                AirportEntity   destination,
                                 LocalDateTime   departure,
                                 int             duration,
                                 int             capacity )
     {
-        FlightEntity newFlight = new FlightEntity( flightName, destinationId, departure, duration, capacity );
+        if( flightName != null
+            && destination != null
+            && departure != null
+            && duration > 0
+            && capacity >= 0 )
+        {
+            FlightEntity newFlight = new FlightEntity( flightName, destination, departure, duration, capacity );
 
-        return flightRepository.create( newFlight );
+            return flightRepository.create( newFlight );
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Incorrect parameter value(s) in FlightEntity constructor!" );
+        }
     }
 
 

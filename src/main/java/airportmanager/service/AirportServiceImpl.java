@@ -27,8 +27,17 @@ public class AirportServiceImpl implements AirportService
                                         String city,
                                         String country )
     {
-        AirportEntity newAirport = new AirportEntity( code, city, country );
+        if( code != null
+            && city != null
+            && country != null )
+        {
+            AirportEntity newAirport = new AirportEntity( code, city, country );
 
-        return airportRepository.create( newAirport );
+            return airportRepository.create( newAirport );
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Incorrect parameter value(s) in AirportEntity constructor!" );
+        }
     }
 }

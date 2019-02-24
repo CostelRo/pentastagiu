@@ -12,6 +12,8 @@ public interface AirportRepository
 
     void save( AirportEntity airportEntity );
 
+    AirportEntity findById( Long airportId );
+
     AirportEntity findByCode( String airportCode );
 
     List findAll();

@@ -10,7 +10,6 @@ import airportmanager.service.api.FlightService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,9 +39,10 @@ public class Main
         FlightRepository flightRepository = context.getBean( FlightRepository.class );
 
 
+
         /*
          * Create & add the known airports
-         * NOTE: test only once with SOLUTION-3 to avoid duplicates in DB!
+         * NOTE: test only once with SOLUTION-3 to avoid duplicates in the database!
          */
         System.out.println( "~~~ 1 ~~~" );
         List<Airport> knownAirports = Arrays.asList( new Airport( "OTP", "Bucharest", "Romania" ),
@@ -74,18 +74,20 @@ public class Main
 
         // reporting for: SOLUTION 3
         AirportEntity localAirportEntity  = airportRepository.findByCode( "IAS" );
-        System.out.println( "\n  Local airport: "
+        System.out.println( "\n>> Local airport: "
                             + localAirportEntity.getCode()
                             + " " + localAirportEntity.getCity()
-                            + " " + localAirportEntity.getCountry() );
-        System.out.println( "\n  Destination airports: "
-                            + airportRepository.findAll() );
+                            + " " + localAirportEntity.getCountry() + "\n" );
+        System.out.println( "\n>> Destination airports: "
+                            + airportRepository.findAll() + "\n" );
+
 
 
         /*
          * Create & add new flights
+         * NOTE: test only once with SOLUTION-3 to avoid duplicates in the database!
          */
-//        System.out.println( "~~~ 2 ~~~" );
+        System.out.println( "~~~ 2 ~~~" );
 
         // for SOLUTION 1 & 2
 //        airportManager.addFlight( "KW345",
@@ -105,21 +107,21 @@ public class Main
 //                                  100 );
 
         // for SOLUTION 3
-        flightService.create( "KW345",
-                              8L,
-                               LocalDateTime.now().plusHours( 1 ),
-                               (2*60*60 + 50*60),
-                               150 );
-        flightService.create( "DK2238",
-                              10L,
-                              LocalDateTime.now().plusHours( 1 ).plusMinutes( 15 ),
-                              (2*60*60 + 50*60),
-                              150 );
-        flightService.create( "JW1869",
-                              7L,
-                              LocalDateTime.now().plusHours( 2 ).plusMinutes( 40 ),
-                              (54*60),
-                              100 );
+//        flightService.create( "KW345",
+//                              airportRepository.findById( 8L ),
+//                              LocalDateTime.now().plusHours( 1 ),
+//                              (2*60*60 + 50*60),
+//                              150 );
+//        flightService.create( "DK2238",
+//                              airportRepository.findById( 10L ),
+//                              LocalDateTime.now().plusHours( 1 ).plusMinutes( 15 ),
+//                              (60*60 + 58*60),
+//                              180 );
+//        flightService.create( "JW1869",
+//                              airportRepository.findById( 7L ),
+//                              LocalDateTime.now().plusHours( 2 ).plusMinutes( 40 ),
+//                              (54*60),
+//                              100 );
 
 
         // reporting for: SOLUTION 1 & 2
@@ -129,52 +131,75 @@ public class Main
 //                                                       LocalDateTime.now(),
 //                                                       airportManager.getLocalAirport() ) );
 
-        // reporting for: SOLUTION 3
+
+        // reporting for: SOLUTION 3 (operation )
+        System.out.println( "\n>> Flight DK2238 departure: "
+                            + flightRepository.findByName( "DK2238" ).getDepartureDateTime() +"\n" );
 
 
+        /*
+         * Attempt to add a new Flight with unknown destination airport code
+         * throws a RuntimeException.
+         */
 
-/*        // attempt to add a new Flight with unknown destination airport code
-        // throws a RuntimeException and then stops the program
+        // for SOLUTION 1 & 2
 //        airportManager.addFlight( "GG666",
 //                                  null,
 //                                  LocalDateTime.now().plusHours( 4 ).plusMinutes( 10 ),
 //                                  (3*60*60),
 //                                  200 );
 
-
-        // create & add new Passengers to active flights
-        Passenger passenger1 = new Passenger( "John",
-                                              "Kelson",
-                                              LocalDate.of( 1998, 8, 8 ) );
-        airportManager.addPassengerToAvailableFlight( passenger1, "KW345" );
-
-        Passenger passenger2 = new Passenger( "Harry",
-                                              "Johnson",
-                                              LocalDate.of( 1998, 8, 8 ) );
-        airportManager.addPassengerToAvailableFlight( passenger2, "JW1869" );
-
-        Passenger passenger3 = new Passenger( "Laura",
-                                                "Digsby",
-                                                LocalDate.of( 1998, 8, 8 ) );
-        airportManager.addPassengerToAvailableFlight( passenger3, "KW345" );
-
-        Passenger passenger4 = new Passenger( "Monica",
-                                                "Brown",
-                                                LocalDate.of( 1998, 8, 8 ) );
-        airportManager.addPassengerToAvailableFlight( passenger4, "DK2238" );
-
-        Passenger passenger5 = new Passenger( "James",
-                                                "Shaw",
-                                                LocalDate.of( 1998, 8, 8 ) );
-        airportManager.addPassengerToAvailableFlight( passenger5, "KW345" );
-
-        Passenger passenger6 = new Passenger( "Robert",
-                                                "Law",
-                                                LocalDate.of( 1998, 8, 8 ) );
-        airportManager.addPassengerToAvailableFlight( passenger6, "DK2238" );
+        // for SOLUTION 3
+//        flightService.create( "VD555",
+//                              null,
+//                              LocalDateTime.now().plusHours( 4 ).plusMinutes( 10 ),
+//                              (3*60*60),
+//                              200 );
 
 
-        // add known passenger to scheduled flight
+
+        /*
+         * create & add new Passengers to active flights
+         */
+
+        // for SOLUTION 1 & 2
+//        Passenger passenger1 = new Passenger( "John",
+//                                              "Kelson",
+//                                              LocalDate.of( 1998, 8, 8 ) );
+//        airportManager.addPassengerToAvailableFlight( passenger1, "KW345" );
+//
+//        Passenger passenger2 = new Passenger( "Harry",
+//                                              "Johnson",
+//                                              LocalDate.of( 1998, 8, 8 ) );
+//        airportManager.addPassengerToAvailableFlight( passenger2, "JW1869" );
+//
+//        Passenger passenger3 = new Passenger( "Laura",
+//                                                "Digsby",
+//                                                LocalDate.of( 1998, 8, 8 ) );
+//        airportManager.addPassengerToAvailableFlight( passenger3, "KW345" );
+//
+//        Passenger passenger4 = new Passenger( "Monica",
+//                                                "Brown",
+//                                                LocalDate.of( 1998, 8, 8 ) );
+//        airportManager.addPassengerToAvailableFlight( passenger4, "DK2238" );
+//
+//        Passenger passenger5 = new Passenger( "James",
+//                                                "Shaw",
+//                                                LocalDate.of( 1998, 8, 8 ) );
+//        airportManager.addPassengerToAvailableFlight( passenger5, "KW345" );
+//
+//        Passenger passenger6 = new Passenger( "Robert",
+//                                                "Law",
+//                                                LocalDate.of( 1998, 8, 8 ) );
+//        airportManager.addPassengerToAvailableFlight( passenger6, "DK2238" );
+
+
+        // for SOLUTION 3
+        // TODO
+
+
+
+/*        // add known passenger to scheduled flight
         System.out.println( "~~~ 3 ~~~" );
         String flightName1 = "JW1869";
         Flight flightToEdit1 = airportManager.getFlightsManager().searchFlightByName( flightName1 );
