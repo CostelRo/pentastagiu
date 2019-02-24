@@ -1,15 +1,15 @@
 package airportmanager.model;
 
 
-import airportmanager.Airport;
 import airportmanager.FlightStatus;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -26,8 +26,11 @@ public class FlightEntity extends AbstractBaseEntity
     private String name;
 
 //    @Column( name = "destination" )
-    @Embedded
-    private Airport destinationAirport;
+//    @Embedded
+    @ManyToOne( targetEntity = AirportEntity.class )
+    @JoinColumn( name = "destinationAirport_id" )
+//    private Airport destinationAirport;
+    private Long destinationAirport;
 
     @Column( name = "departure" )
     private LocalDateTime departureDateTime;
@@ -53,14 +56,14 @@ public class FlightEntity extends AbstractBaseEntity
         // default entity constructor
     }
 
-    public FlightEntity( String name,
-                         Airport destinationAirport,
-                         LocalDateTime departureDateTime,
-                         int durationInSeconds,
-                         int maxPassengersCapacity )
+    public FlightEntity( String         name,
+                         Long           destinationAirportId,
+                         LocalDateTime  departureDateTime,
+                         int            durationInSeconds,
+                         int            maxPassengersCapacity )
     {
         this.name                   = name;
-        this.destinationAirport     = destinationAirport;
+        this.destinationAirport     = destinationAirportId;
         this.departureDateTime      = departureDateTime;
         this.durationInSeconds      = durationInSeconds;
         this.maxPassengersCapacity  = maxPassengersCapacity;
@@ -83,16 +86,16 @@ public class FlightEntity extends AbstractBaseEntity
     }
 
 
-    public Airport getDestinationAirport()
+    public Long getDestinationAirportId()
     {
         return destinationAirport;
     }
 
-    public void setDestinationAirport( Airport destinationAirport )
+    public void setDestinationAirportId( Long destinationAirportId )
     {
         if( destinationAirport != null )
         {
-            this.destinationAirport = destinationAirport;
+            this.destinationAirport = destinationAirportId;
         }
     }
 

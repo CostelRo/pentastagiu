@@ -6,5 +6,11 @@ import airportmanager.model.PassengerEntity;
 
 public interface PassengerRepository
 {
-    PassengerEntity createPassenger( PassengerEntity newPassenger );
+    PassengerEntity create( PassengerEntity newPassenger );
+
+    void save( PassengerEntity passengerEntity );
+
+    PassengerEntity findById( Long id );
+
+    PassengerEntity findByName( String name );
 }

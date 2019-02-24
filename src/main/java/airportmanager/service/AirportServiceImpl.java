@@ -29,6 +29,6 @@ public class AirportServiceImpl implements AirportService
     {
         AirportEntity newAirport = new AirportEntity( code, city, country );
 
-        return airportRepository.createAirport( newAirport );
+        return airportRepository.create( newAirport );
     }
 }

@@ -1,12 +1,14 @@
 package airportmanager.service;
 
 
+import airportmanager.model.FlightEntity;
 import airportmanager.model.PassengerEntity;
 import airportmanager.repository.api.PassengerRepository;
 import airportmanager.service.api.PassengerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.time.LocalDate;
 
 
@@ -16,6 +18,7 @@ public class PassengerServiceImpl implements PassengerService
 {
     // fields
 
+    @Resource
     private PassengerRepository passengerRepository;
 
 
@@ -29,6 +32,18 @@ public class PassengerServiceImpl implements PassengerService
     {
         PassengerEntity newPassenger = new PassengerEntity( name, surname, birthday );
 
-        return passengerRepository.createPassenger( newPassenger );
+        return passengerRepository.create( newPassenger );
+    }
+
+
+    public void assignFlightToHistory( FlightEntity flightEntity, Long passengerID )
+    {
+        if( flightEntity != null && passengerID != null )
+        {
+            PassengerEntity passengerEntity = passengerRepository.findById( passengerID );
+            passengerEntity.getFlightsHistory().add( flightEntity );
+
+            passengerRepository.save( passengerEntity );
+        }
     }
 }

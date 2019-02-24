@@ -41,7 +41,7 @@
     <!-- Spring + Hibernate -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/airportdb?useSSL=false" />
+        <property name="url" value="jdbc:mysql://localhost:3306/airportdb?allowPublicKeyRetrieval=true&amp;useSSL=false" />
         <property name="username" value="java" />
         <property name="password" value="great2018" />
     </bean>
@@ -55,7 +55,7 @@
         </property>
         <property name="jpaProperties">
             <props>
-                <prop key="hibernate.hbm2ddl.auto">validate</prop> <!-- create; after tables creation inDB: validate -->
+                <prop key="hibernate.hbm2ddl.auto">validate</prop> <!-- create / after tables creation in DB: validate -->
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>
