@@ -3,6 +3,8 @@ package airportmanager.repository.api;
 
 import airportmanager.model.PassengerEntity;
 
+import java.util.List;
+
 
 public interface PassengerRepository
 {
@@ -13,4 +15,6 @@ public interface PassengerRepository
     PassengerEntity findById( Long id );
 
     PassengerEntity findByName( String name );
+
+    List findAll();
 }

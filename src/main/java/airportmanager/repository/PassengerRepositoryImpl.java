@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.List;
 
 
 @Repository
@@ -80,7 +81,7 @@ public class PassengerRepositoryImpl implements PassengerRepository
     {
         if( name != null )
         {
-            Query query = this.entityManager.createQuery( "SELECT psgr FROM PassengerEntity"
+            Query query = this.entityManager.createQuery( "SELECT psgr FROM PassengerEntity psgr"
                                                              + " WHERE psgr.name = :name" );
             query.setParameter( "name", name );
 
@@ -88,5 +89,14 @@ public class PassengerRepositoryImpl implements PassengerRepository
         }
 
         return  null;
+    }
+
+
+    @Override
+    public List findAll()
+    {
+        Query query = this.entityManager.createQuery( "FROM PassengerEntity" );
+
+        return query.getResultList();
     }
 }

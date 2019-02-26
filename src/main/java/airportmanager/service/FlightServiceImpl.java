@@ -1,6 +1,7 @@
 package airportmanager.service;
 
 
+import airportmanager.FlightStatus;
 import airportmanager.model.AirportEntity;
 import airportmanager.model.FlightEntity;
 import airportmanager.model.PassengerEntity;
@@ -50,14 +51,34 @@ public class FlightServiceImpl implements FlightService
     }
 
 
+    @Override
     public void assignPassengerToFlight( PassengerEntity passengerEntity, String flightName )
     {
         if( passengerEntity != null && flightName != null )
         {
             FlightEntity flightEntity = flightRepository.findByName( flightName );
-            flightEntity.getPassengers().add( passengerEntity );
 
-            flightRepository.save( flightEntity );
+            if( flightEntity.getStatus() == FlightStatus.SCHEDULED
+                && flightEntity.getPassengers().size() < flightEntity.getMaxPassengersCapacity() )
+            {
+                flightEntity.getPassengers().add( passengerEntity );
+
+                flightRepository.save( flightEntity );
+            }
+        }
+        else
+        {
+            System.out.println( "Not allowed to add passenger to the flight!" );
+        }
+    }
+
+
+    @Override
+    public void delete( String flightName )
+    {
+        if( flightName != null )
+        {
+            flightRepository.deleteByName( flightName );
         }
     }
 }

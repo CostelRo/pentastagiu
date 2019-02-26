@@ -3,8 +3,10 @@ package airportmanager.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class PassengerEntity extends AbstractBaseEntity
     @Column( name = "birthday" )
     private LocalDate birthday;
 
-    @ManyToMany( targetEntity = FlightEntity.class )
+    @ManyToMany( targetEntity = FlightEntity.class, fetch = FetchType.EAGER )
     private Set<FlightEntity> flightsHistory = new HashSet<>();
 
 
