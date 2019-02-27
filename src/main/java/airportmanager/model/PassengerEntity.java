@@ -104,4 +104,30 @@ public class PassengerEntity extends AbstractBaseEntity
             this.flightsHistory = flightsHistory;
         }
     }
+
+
+    // other methods
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+
+        PassengerEntity other = (PassengerEntity) obj;
+
+        if (!name.equals(other.name)) return false;
+        if (!surname.equals(other.surname)) return false;
+        return birthday.equals(other.birthday);
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+        int result = name.hashCode();
+        result = 31 * result + surname.hashCode();
+        result = 31 * result + birthday.hashCode();
+        return result;
+    }
 }

@@ -16,6 +16,7 @@ import airportmanager.service.api.PassengerService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -144,8 +145,8 @@ public class Main
 
 
         // reporting for: SOLUTION 3 (operation )
-        System.out.println( "\n>> Flight DK2238 departure: "
-                            + flightRepository.findByName( "DK2238" ).getDepartureDateTime() +"\n" );
+        System.out.println( "\n>> Flight JW1869 departure: "
+                            + flightRepository.findByName( "JW1869" ).getDepartureDateTime() +"\n" );
 
 
         /*
@@ -493,51 +494,106 @@ public class Main
 
 
 
-/*        // search passengers using various criteria
+        /*
+         * Search passengers using various criteria
+         */
+
         System.out.println( "~~~ 14 ~~~" );
-        String partialName2 = "john";
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getPassengersManager()
-                                                                                      .searchPassengersByName( partialName2 ) ),
-                                                       "SEARCH: Passengers named like: \"" + partialName2 + "\"",
-                                                       LocalDateTime.now(),
-                                                       airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 1 & 2
+//        String partialName2 = "john";
+//        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getPassengersManager()
+//                                                                                      .searchPassengersByName( partialName2 ) ),
+//                                                       "SEARCH: Passengers named like: \"" + partialName2 + "\"",
+//                                                       LocalDateTime.now(),
+//                                                       airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 3
+        String nameToFind = "john";
+        for( Object obj : passengerRepository.findByName( nameToFind ) )
+        {
+            PassengerEntity passengerEntity = (PassengerEntity) obj;
+            System.out.println( passengerEntity.getName() + " " + passengerEntity.getSurname().toUpperCase() );
+        }
+
 
 
         System.out.println( "~~~ 15 ~~~" );
-        LocalDate birthday = LocalDate.of( 1998, 8, 8 );
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getPassengersManager()
-                                                                                      .searchPassengersByBirthday( birthday ) ),
-                                                       "SEARCH: Passengers with birthday: " + birthday,
-                                                       LocalDateTime.now(),
-                                                       airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 1 & 2
+//        LocalDate birthday1 = LocalDate.of( 1998, 8, 8 );
+//        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getPassengersManager()
+//                                                                                      .searchPassengersByBirthday( birthday1 ) ),
+//                                                       "SEARCH: Passengers with birthday: " + birthday1,
+//                                                       LocalDateTime.now(),
+//                                                       airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 3
+        LocalDate birthday2 = LocalDate.of( 1998, 8, 8 );
+        for( Object obj : passengerRepository.findByBirthday( birthday2 ) )
+        {
+            PassengerEntity passengerEntity = (PassengerEntity) obj;
+            System.out.println( passengerEntity.getName()
+                                + ", birthday: " + passengerEntity.getBirthday()
+                                + ", flights history: " + passengerEntity.getFlightsHistory() );
+        }
+
 
 
         System.out.println( "~~~ 16 ~~~" );
-        int passengerID_2 = 3;
-        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getDestinationsForOnePassenger( passengerID_2 )),
-                                                                        "SEARCH: Destinations for passenger #" + passengerID_2,
-                                                                        LocalDateTime.now(),
-                                                                        airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 1 & 2
+//        int passengerID_2 = 3;
+//        System.out.println( ReportCreator.buildReport( new ArrayList<>( airportManager.getDestinationsForOnePassenger( passengerID_2 )),
+//                                                                        "SEARCH: Destinations for passenger #" + passengerID_2,
+//                                                                        LocalDateTime.now(),
+//                                                                        airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 3
+        String name = "James";
+        System.out.println( passengerService.getDestinationsForOnePassenger( name ) );
+
 
 
         System.out.println( "~~~ 17 ~~~" );
-        String flightName3 = "KW345";
-        System.out.println( ReportCreator.buildReport( airportManager.getPassengersManager().getPassengersByID().values()
-                                                                        .stream()
-                                                                        .filter( passenger -> passenger.getFlightsHistory()
-                                                                                                       .contains( flightName3 ) )
-                                                                        .collect( Collectors.toList() ),
-                                                       "SEARCH: Passengers from flight " + flightName3,
-                                                       LocalDateTime.now(),
-                                                       airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 1 & 2
+//        String flightName3 = "KW345";
+//        System.out.println( ReportCreator.buildReport( airportManager.getPassengersManager().getPassengersByID().values()
+//                                                                        .stream()
+//                                                                        .filter( passenger -> passenger.getFlightsHistory()
+//                                                                                                       .contains( flightName3 ) )
+//                                                                        .collect( Collectors.toList() ),
+//                                                       "SEARCH: Passengers from flight " + flightName3,
+//                                                       LocalDateTime.now(),
+//                                                       airportManager.getLocalAirport() ) );
+
+        // for SOLUTION 3
+        String flightName3bis = "KW345";
+        System.out.println( "Passengers from flight " + flightName3bis + ": " );
+        flightRepository.findByName( flightName3bis ).getPassengers()
+                                                     .forEach( passengerEntity -> System.out.print( passengerEntity.getName()
+                                                                                                    + " " + passengerEntity.getSurname().toUpperCase()
+                                                                                                    + ", " ) );
+        System.out.println();
 
 
-        // remove a passenger
+
+        /*
+         * Remove a passenger
+         */
+
         System.out.println( "~~~ 18 ~~~" );
-        int passengerID = 2;
-        airportManager.removePassengerFromEverything( passengerID );
-        System.out.println( "Passengers data: " + airportManager.getPassengersManager().getPassengersByID() );
-*/
+
+        // for SOLUTION 1 & 2
+//        int passengerID = 2;
+//        airportManager.removePassengerFromEverything( passengerID );
+//        System.out.println( "Passengers data: " + airportManager.getPassengersManager().getPassengersByID() );
+
+        // for SOLUTION 3
+        String passengerName = "Harry";
+        passengerService.removePassengerFromEverything( passengerName );
+
 
 
         // finally, stop the application

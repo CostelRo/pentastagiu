@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -77,7 +78,7 @@ public class PassengerRepositoryImpl implements PassengerRepository
     }
 
 
-    public PassengerEntity findByName( String name )
+    public List findByName( String name )
     {
         if( name != null )
         {
@@ -85,10 +86,26 @@ public class PassengerRepositoryImpl implements PassengerRepository
                                                              + " WHERE psgr.name = :name" );
             query.setParameter( "name", name );
 
-            return (PassengerEntity) query.getSingleResult();
+            return query.getResultList();
         }
 
         return  null;
+    }
+
+
+    @Override
+    public List findByBirthday( LocalDate birthday )
+    {
+        if( birthday != null )
+        {
+            Query query = this.entityManager.createQuery( "SELECT psgr FROM PassengerEntity psgr"
+                                                          + " WHERE psgr.birthday = :birthday" );
+            query.setParameter( "birthday", birthday );
+
+            return query.getResultList();
+        }
+
+        return null;
     }
 
 
@@ -98,5 +115,19 @@ public class PassengerRepositoryImpl implements PassengerRepository
         Query query = this.entityManager.createQuery( "FROM PassengerEntity" );
 
         return query.getResultList();
+    }
+
+
+    @Override
+    public void deleteByName( String name )
+    {
+        if( name != null )
+        {
+            Query query = this.entityManager.createQuery( "DELETE FROM PassengerEntity psgr"
+                                                          + " WHERE psgr.name = :name" );
+            query.setParameter( "name", name );
+
+            query.executeUpdate();
+        }
     }
 }
